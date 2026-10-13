@@ -3,488 +3,995 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Tip Calculator — Split the Bill Fast</title>
-<meta name="description" content="Free tip calculator. Enter your bill, pick a tip percentage, and split the total between any number of people. Works instantly on mobile." />
+<title>Free QR Code Generator — Create & Download QR Codes Instantly</title>
+<meta name="description" content="Generate QR codes for URLs, text, WiFi, email, phone, and SMS. Customize colors and size, then download as PNG. Free, no sign-up, works offline." />
 
 <style>
   :root {
-    --bg: #0f172a;
-    --card: #1e293b;
-    --card-2: #334155;
-    --accent: #22d3ee;
-    --accent-2: #06b6d4;
-    --ink: #f1f5f9;
-    --muted: #94a3b8;
-    --line: #334155;
-    --success: #4ade80;
+    --bg: #f1f5f9;
+    --card: #ffffff;
+    --ink: #0f172a;
+    --muted: #64748b;
+    --line: #e2e8f0;
+    --brand: #4f46e5;
+    --brand-dark: #4338ca;
+    --brand-light: #eef2ff;
+    --success: #16a34a;
+    --danger: #dc2626;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background: radial-gradient(circle at 20% 0%, #1e293b 0%, #0f172a 60%);
+    background: var(--bg);
     color: var(--ink);
+    line-height: 1.55;
     min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
     -webkit-font-smoothing: antialiased;
   }
 
-  .app {
-    width: 100%;
-    max-width: 420px;
+  /* ---------- Header ---------- */
+  header {
     background: var(--card);
-    border-radius: 20px;
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
-    overflow: hidden;
-    border: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    padding: 18px 24px;
+  }
+  .header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .logo {
+    font-weight: 800;
+    font-size: 20px;
+    letter-spacing: -0.02em;
+    color: var(--brand);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .logo-mark {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    background: var(--brand);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 3px;
+    padding: 5px;
+  }
+  .logo-mark span { background: #fff; border-radius: 2px; }
+  .logo-mark span:nth-child(2) { background: transparent; }
+  .logo-mark span:nth-child(3) { background: transparent; }
+  .header-tag {
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 500;
   }
 
-  /* ---------- Header ---------- */
-  .header {
-    padding: 22px 24px 16px;
+  /* ---------- Hero ---------- */
+  .hero {
     text-align: center;
+    padding: 44px 24px 20px;
+  }
+  .hero h1 {
+    font-size: clamp(26px, 4.5vw, 38px);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    margin-bottom: 10px;
+    line-height: 1.15;
+  }
+  .hero p {
+    font-size: clamp(15px, 2vw, 17px);
+    color: var(--muted);
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  /* ---------- Layout ---------- */
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px 24px 60px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+  @media (max-width: 900px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+
+  .card {
+    background: var(--card);
+    border-radius: 16px;
+    border: 1px solid var(--line);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+    overflow: hidden;
+  }
+
+  .card-pad { padding: 26px 26px 28px; }
+
+  .section-title {
+    font-size: 12.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--brand);
+    margin-bottom: 14px;
+  }
+
+  /* ---------- Tabs ---------- */
+  .tabs {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
     border-bottom: 1px solid var(--line);
   }
-  .header h1 {
-    font-size: 22px;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-  }
-  .header h1 span { color: var(--accent); }
-  .header p {
-    font-size: 12.5px;
+  .tab {
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: #f8fafc;
+    border: 1.5px solid var(--line);
     color: var(--muted);
-    margin-top: 4px;
+    font-size: 13.5px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
+  .tab:hover { border-color: #cbd5e1; color: var(--ink); }
+  .tab.active {
+    background: var(--brand);
+    border-color: var(--brand);
+    color: #fff;
+  }
+  .tab svg { width: 14px; height: 14px; }
 
-  /* ---------- Body ---------- */
-  .body { padding: 22px 24px 24px; }
-
-  .field { margin-bottom: 20px; }
-
+  /* ---------- Inputs ---------- */
+  .field { margin-bottom: 16px; }
   .field label {
     display: block;
     font-size: 13px;
     font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+  .field label .optional {
     color: var(--muted);
-    margin-bottom: 8px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    font-weight: 400;
+    font-size: 12px;
+    margin-left: 4px;
   }
 
-  .bill-input {
-    position: relative;
-  }
-  .bill-input .prefix {
-    position: absolute;
-    left: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 26px;
-    font-weight: 700;
-    color: var(--muted);
-    pointer-events: none;
-  }
-  .bill-input input {
+  input[type="text"],
+  input[type="url"],
+  input[type="tel"],
+  input[type="email"],
+  input[type="password"],
+  textarea,
+  select {
     width: 100%;
-    padding: 16px 16px 16px 40px;
-    background: var(--card-2);
-    border: 2px solid transparent;
-    border-radius: 12px;
-    font-size: 26px;
-    font-weight: 700;
-    color: var(--ink);
-    font-family: inherit;
-    outline: none;
-    transition: border-color 0.15s;
-  }
-  .bill-input input:focus { border-color: var(--accent); }
-
-  /* ---------- Tip buttons ---------- */
-  .tip-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 8px;
-  }
-  .tip-btn {
-    padding: 12px 0;
+    padding: 12px 14px;
+    border: 1.5px solid var(--line);
     border-radius: 10px;
-    background: var(--card-2);
-    border: 2px solid transparent;
-    color: var(--ink);
     font-size: 15px;
-    font-weight: 700;
+    font-family: inherit;
+    color: var(--ink);
+    background: #fff;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  textarea { resize: vertical; min-height: 90px; line-height: 1.5; }
+  input:focus, textarea:focus, select:focus {
+    border-color: var(--brand);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+  }
+
+  .row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  @media (max-width: 500px) {
+    .row-2 { grid-template-columns: 1fr; }
+  }
+
+  /* ---------- Advanced options ---------- */
+  .advanced-toggle {
+    background: none;
+    border: none;
+    color: var(--brand);
+    font-size: 13.5px;
+    font-weight: 600;
     font-family: inherit;
     cursor: pointer;
-    transition: all 0.12s;
-  }
-  .tip-btn:hover { background: #475569; }
-  .tip-btn.active {
-    background: var(--accent);
-    color: #0f172a;
-    border-color: var(--accent);
-  }
-
-  .custom-tip {
-    margin-top: 10px;
+    padding: 6px 0;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 6px;
+    margin-top: 4px;
   }
-  .custom-tip input {
-    flex: 1;
-    padding: 11px 14px;
-    background: var(--card-2);
-    border: 2px solid transparent;
-    border-radius: 10px;
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--ink);
-    font-family: inherit;
-    outline: none;
+  .advanced-toggle:hover { color: var(--brand-dark); }
+  .advanced-toggle .arrow {
+    transition: transform 0.2s;
+    display: inline-block;
+    font-size: 10px;
   }
-  .custom-tip input:focus { border-color: var(--accent); }
-  .custom-tip span {
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--muted);
-  }
+  .advanced-toggle.open .arrow { transform: rotate(90deg); }
 
-  /* ---------- Split people ---------- */
-  .split-row {
+  .advanced-panel {
+    display: none;
+    margin-top: 14px;
+    padding-top: 18px;
+    border-top: 1px dashed var(--line);
+  }
+  .advanced-panel.open { display: block; }
+
+  /* ---------- Color pickers ---------- */
+  .color-row {
     display: flex;
     align-items: center;
     gap: 12px;
   }
-  .round-btn {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: var(--card-2);
-    border: none;
-    color: var(--accent);
-    font-size: 24px;
-    font-weight: 700;
+  .color-input {
+    width: 44px;
+    height: 44px;
+    border: 1.5px solid var(--line);
+    border-radius: 10px;
     cursor: pointer;
-    font-family: inherit;
-    transition: background 0.12s;
+    background: none;
+    padding: 3px;
+  }
+  .color-input::-webkit-color-swatch-wrapper { padding: 0; }
+  .color-input::-webkit-color-swatch { border: none; border-radius: 6px; }
+  .color-input::-moz-color-swatch { border: none; border-radius: 6px; }
+
+  .hex-input {
+    flex: 1;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    text-transform: uppercase;
+    font-size: 14px;
+  }
+
+  /* ---------- Size slider ---------- */
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  input[type="range"] {
+    flex: 1;
+    accent-color: var(--brand);
+  }
+  .slider-value {
+    min-width: 62px;
+    text-align: right;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--brand);
+  }
+
+  /* ---------- Preview panel ---------- */
+  .preview-panel {
+    position: sticky;
+    top: 20px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .preview-box {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 26px;
     display: flex;
     align-items: center;
     justify-content: center;
-    line-height: 1;
+    min-height: 300px;
+    margin-bottom: 18px;
+    border: 1px dashed var(--line);
   }
-  .round-btn:hover { background: #475569; }
-  .round-btn:active { transform: scale(0.94); }
 
-  .people-count {
-    flex: 1;
-    text-align: center;
-    font-size: 22px;
-    font-weight: 800;
-    color: var(--ink);
-  }
-  .people-count small {
+  #qrCanvas {
     display: block;
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-top: 2px;
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    image-rendering: pixelated;
+    background: #fff;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
   }
 
-  /* ---------- Results ---------- */
-  .results {
-    margin-top: 24px;
-    padding-top: 22px;
-    border-top: 2px dashed var(--line);
-  }
-  .result-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 9px 0;
-    font-size: 15px;
-  }
-  .result-row .label { color: var(--muted); font-weight: 500; }
-  .result-row .value { font-weight: 700; color: var(--ink); }
-
-  .result-row.total {
-    margin-top: 10px;
-    padding-top: 16px;
-    border-top: 1px solid var(--line);
-  }
-  .result-row.total .label {
-    color: var(--ink);
-    font-size: 16px;
-    font-weight: 700;
-  }
-  .result-row.total .value {
-    font-size: 30px;
-    font-weight: 800;
-    color: var(--accent);
-    letter-spacing: -0.02em;
-  }
-
-  .per-person {
-    margin-top: 14px;
-    background: linear-gradient(135deg, #0891b2 0%, #06b6d4 100%);
-    border-radius: 14px;
-    padding: 18px;
+  .placeholder {
     text-align: center;
-    box-shadow: 0 8px 20px rgba(6, 182, 212, 0.25);
-  }
-  .per-person .label {
-    font-size: 12px;
-    font-weight: 700;
-    color: rgba(255,255,255,0.85);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-  }
-  .per-person .value {
-    font-size: 38px;
-    font-weight: 800;
-    color: #fff;
-    letter-spacing: -0.03em;
-    margin-top: 4px;
-  }
-  .per-person .sub {
-    font-size: 12.5px;
-    color: rgba(255,255,255,0.85);
-    margin-top: 4px;
-    font-weight: 500;
-  }
-
-  /* ---------- Reset ---------- */
-  .reset-btn {
-    width: 100%;
-    margin-top: 18px;
-    padding: 13px;
-    background: transparent;
-    border: 1.5px solid var(--line);
-    border-radius: 10px;
     color: var(--muted);
     font-size: 14px;
-    font-weight: 600;
+  }
+  .placeholder-icon {
+    font-size: 44px;
+    margin-bottom: 10px;
+    opacity: 0.35;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 10px;
+    background: var(--brand);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
     font-family: inherit;
     cursor: pointer;
-    transition: all 0.12s;
+    letter-spacing: -0.01em;
+    transition: background 0.15s, transform 0.05s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
   }
-  .reset-btn:hover {
-    border-color: var(--accent);
-    color: var(--accent);
+  .btn:hover:not(:disabled) { background: var(--brand-dark); }
+  .btn:active:not(:disabled) { transform: translateY(1px); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .btn-secondary {
+    background: #fff;
+    color: var(--ink);
+    border: 1.5px solid var(--line);
+    margin-top: 10px;
+  }
+  .btn-secondary:hover:not(:disabled) {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+  }
+
+  .btn-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  .btn-row .btn { margin-top: 0; }
+
+  .error-msg {
+    color: var(--danger);
+    font-size: 13px;
+    margin-top: 8px;
+    display: none;
+  }
+  .error-msg.show { display: block; }
+
+  .hint {
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-top: 12px;
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  /* ---------- Trust badges ---------- */
+  .trust {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 22px;
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+  .trust span::before {
+    content: "✓ ";
+    color: var(--success);
+    font-weight: 700;
   }
 
   /* ---------- Footer ---------- */
-  .footer {
-    padding: 16px 24px 22px;
+  footer {
     text-align: center;
-    font-size: 11.5px;
+    padding: 28px 24px;
+    font-size: 12.5px;
     color: var(--muted);
     border-top: 1px solid var(--line);
+    background: var(--card);
   }
 
-  /* Remove number spinners */
-  input[type=number]::-webkit-outer-spin-button,
-  input[type=number]::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+  /* ---------- Toast ---------- */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--ink);
+    color: #fff;
+    padding: 12px 22px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    opacity: 0;
+    transition: all 0.25s ease;
+    pointer-events: none;
+    z-index: 100;
   }
-  input[type=number] { -moz-appearance: textfield; }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* Hide the tab content blocks by default */
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
 </style>
 </head>
 <body>
 
-<div class="app">
-
-  <div class="header">
-    <h1>Tip<span>Calc</span></h1>
-    <p>Split the bill in seconds</p>
+<!-- ================= HEADER ================= -->
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-mark">
+        <span></span><span></span><span></span><span></span>
+      </div>
+      BashirQR
+    </div>
+    <div class="header-tag">Free · No sign-up · Unlimited</div>
   </div>
+</header>
 
-  <div class="body">
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <h1>Free QR Code Generator</h1>
+  <p>Create QR codes for links, WiFi, email, phone, SMS, and text. Customize colors and size, then download as PNG — all in your browser.</p>
+</section>
 
-    <!-- Bill amount -->
-    <div class="field">
-      <label for="bill">Bill Amount</label>
-      <div class="bill-input">
-        <span class="prefix">$</span>
-        <input type="number" id="bill" placeholder="0.00" inputmode="decimal" min="0" step="0.01" />
-      </div>
-    </div>
+<!-- ================= MAIN ================= -->
+<div class="container">
+  <div class="grid">
 
-    <!-- Tip % -->
-    <div class="field">
-      <label>Tip Percentage</label>
-      <div class="tip-grid" id="tipGrid">
-        <button type="button" class="tip-btn" data-tip="10">10%</button>
-        <button type="button" class="tip-btn" data-tip="15">15%</button>
-        <button type="button" class="tip-btn active" data-tip="18">18%</button>
-        <button type="button" class="tip-btn" data-tip="20">20%</button>
-        <button type="button" class="tip-btn" data-tip="25">25%</button>
-      </div>
-      <div class="custom-tip">
-        <input type="number" id="customTip" placeholder="Custom tip" inputmode="decimal" min="0" step="0.5" />
-        <span>%</span>
-      </div>
-    </div>
+    <!-- LEFT: INPUTS -->
+    <div class="card">
+      <div class="card-pad">
 
-    <!-- Split -->
-    <div class="field">
-      <label>Split Between</label>
-      <div class="split-row">
-        <button type="button" class="round-btn" id="minusBtn">−</button>
-        <div class="people-count">
-          <span id="peopleCount">1</span>
-          <small id="peopleLabel">person</small>
+        <div class="section-title">What's this QR code for?</div>
+
+        <!-- Tabs -->
+        <div class="tabs" id="tabs">
+          <button type="button" class="tab active" data-tab="url">
+            🔗 URL
+          </button>
+          <button type="button" class="tab" data-tab="text">
+            📝 Text
+          </button>
+          <button type="button" class="tab" data-tab="wifi">
+            📶 WiFi
+          </button>
+          <button type="button" class="tab" data-tab="email">
+            ✉️ Email
+          </button>
+          <button type="button" class="tab" data-tab="phone">
+            📞 Phone
+          </button>
+          <button type="button" class="tab" data-tab="sms">
+            💬 SMS
+          </button>
         </div>
-        <button type="button" class="round-btn" id="plusBtn">+</button>
+
+        <!-- URL -->
+        <div class="tab-content active" data-content="url">
+          <div class="field">
+            <label for="urlInput">Website URL</label>
+            <input type="url" id="urlInput" placeholder="https://example.com" autocomplete="off" />
+          </div>
+        </div>
+
+        <!-- Text -->
+        <div class="tab-content" data-content="text">
+          <div class="field">
+            <label for="textInput">Your Text</label>
+            <textarea id="textInput" placeholder="Enter any text, note, or message…"></textarea>
+          </div>
+        </div>
+
+        <!-- WiFi -->
+        <div class="tab-content" data-content="wifi">
+          <div class="field">
+            <label for="wifiSsid">Network Name (SSID)</label>
+            <input type="text" id="wifiSsid" placeholder="MyWiFiNetwork" autocomplete="off" />
+          </div>
+          <div class="field">
+            <label for="wifiPassword">Password <span class="optional">(leave blank for open network)</span></label>
+            <input type="text" id="wifiPassword" placeholder="••••••••" autocomplete="off" />
+          </div>
+          <div class="field">
+            <label for="wifiSecurity">Security Type</label>
+            <select id="wifiSecurity">
+              <option value="WPA">WPA / WPA2 / WPA3</option>
+              <option value="WEP">WEP</option>
+              <option value="nopass">Open (no password)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="wifiHidden">Hidden Network?</label>
+            <select id="wifiHidden">
+              <option value="false">No</option>
+              <option value="true">Yes</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="tab-content" data-content="email">
+          <div class="field">
+            <label for="emailTo">Email Address</label>
+            <input type="email" id="emailTo" placeholder="hello@example.com" autocomplete="off" />
+          </div>
+          <div class="field">
+            <label for="emailSubject">Subject <span class="optional">(optional)</span></label>
+            <input type="text" id="emailSubject" placeholder="Hello!" autocomplete="off" />
+          </div>
+          <div class="field">
+            <label for="emailBody">Message <span class="optional">(optional)</span></label>
+            <textarea id="emailBody" placeholder="Write your message…"></textarea>
+          </div>
+        </div>
+
+        <!-- Phone -->
+        <div class="tab-content" data-content="phone">
+          <div class="field">
+            <label for="phoneNumber">Phone Number</label>
+            <input type="tel" id="phoneNumber" placeholder="+1 555 123 4567" autocomplete="off" />
+          </div>
+          <p class="hint" style="text-align:left;margin-top:0;">
+            Scanning this QR will prompt the user to call this number.
+          </p>
+        </div>
+
+        <!-- SMS -->
+        <div class="tab-content" data-content="sms">
+          <div class="field">
+            <label for="smsNumber">Phone Number</label>
+            <input type="tel" id="smsNumber" placeholder="+1 555 123 4567" autocomplete="off" />
+          </div>
+          <div class="field">
+            <label for="smsBody">Message <span class="optional">(optional)</span></label>
+            <textarea id="smsBody" placeholder="Pre-filled text message…"></textarea>
+          </div>
+        </div>
+
+        <!-- Advanced toggle -->
+        <button type="button" class="advanced-toggle" id="advToggle">
+          <span class="arrow">▶</span> Customize appearance
+        </button>
+
+        <div class="advanced-panel" id="advPanel">
+
+          <div class="field">
+            <label>Foreground Color (dots)</label>
+            <div class="color-row">
+              <input type="color" id="fgColor" class="color-input" value="#0f172a" />
+              <input type="text" id="fgHex" class="hex-input" value="#0F172A" maxlength="7" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Background Color</label>
+            <div class="color-row">
+              <input type="color" id="bgColor" class="color-input" value="#ffffff" />
+              <input type="text" id="bgHex" class="hex-input" value="#FFFFFF" maxlength="7" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Size</label>
+            <div class="slider-row">
+              <input type="range" id="sizeRange" min="128" max="1024" step="32" value="512" />
+              <span class="slider-value" id="sizeValue">512px</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Error Correction <span class="optional">(higher = more damage-resistant)</span></label>
+            <select id="eccSelect">
+              <option value="L">Low (7%)</option>
+              <option value="M" selected>Medium (15%)</option>
+              <option value="Q">Quartile (25%)</option>
+              <option value="H">High (30%)</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Margin <span class="optional">(quiet zone)</span></label>
+            <div class="slider-row">
+              <input type="range" id="marginRange" min="0" max="8" step="1" value="4" />
+              <span class="slider-value" id="marginValue">4</span>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="error-msg" id="errorMsg"></div>
+
       </div>
     </div>
 
-    <!-- Results -->
-    <div class="results">
-      <div class="result-row">
-        <span class="label">Bill</span>
-        <span class="value" id="resBill">$0.00</span>
-      </div>
-      <div class="result-row">
-        <span class="label">Tip</span>
-        <span class="value" id="resTip">$0.00</span>
-      </div>
-      <div class="result-row total">
-        <span class="label">Total</span>
-        <span class="value" id="resTotal">$0.00</span>
-      </div>
+    <!-- RIGHT: PREVIEW -->
+    <div class="preview-panel">
+      <div class="card">
+        <div class="card-pad">
 
-      <div class="per-person" id="perPersonBox" style="display:none;">
-        <div class="label">Each Person Pays</div>
-        <div class="value" id="resPerPerson">$0.00</div>
-        <div class="sub" id="perPersonSub"></div>
+          <div class="section-title">Live Preview</div>
+
+          <div class="preview-box">
+            <canvas id="qrCanvas" style="display:none;"></canvas>
+            <div class="placeholder" id="placeholder">
+              <div class="placeholder-icon">▦</div>
+              <div>Your QR code will appear here</div>
+            </div>
+          </div>
+
+          <button type="button" class="btn" id="downloadBtn" disabled>
+            ⬇ Download PNG
+          </button>
+
+          <div class="btn-row">
+            <button type="button" class="btn btn-secondary" id="copyBtn" disabled>
+              📋 Copy Image
+            </button>
+            <button type="button" class="btn btn-secondary" id="printBtn" disabled>
+              🖨 Print
+            </button>
+          </div>
+
+          <div class="hint">
+            Everything runs in your browser. Nothing is uploaded or stored.
+          </div>
+
+          <div class="trust">
+            <span>No sign-up</span>
+            <span>No watermark</span>
+            <span>Unlimited uses</span>
+          </div>
+
+        </div>
       </div>
     </div>
 
-    <button type="button" class="reset-btn" id="resetBtn">Reset</button>
-
   </div>
-
-  <div class="footer">
-    No sign-up · No tracking · Works offline
-  </div>
-
 </div>
 
+<!-- ================= FOOTER ================= -->
+<footer>
+  BashirQR — Free QR code generator. No account, no tracking, no limits.
+</footer>
+
+<!-- ================= TOAST ================= -->
+<div class="toast" id="toast"></div>
+
+<!-- ================= QR LIBRARY (inline) ================= -->
 <script>
+/* =========================================================
+   qrcode-generator — Kazuhiko Arase (MIT License)
+   Minified inline build. Source: https://github.com/kazuhikoarase/qrcode-generator
+   ========================================================= */
+var qrcode=function(){function t(t,r){this._typeNumber=t,this._errorCorrectLevel=r,this._modules=null,this._moduleCount=0,this._dataCache=null,this._dataList=[]}function r(t){var r=0;t=(t+"").split("");for(var e=0;e<t.length;e++)r+=t[e].charCodeAt(0);return r}function e(t){return encodeURI(t).toString().replace(/%[0-9A-F]{2}/g,function(t){return String.fromCharCode(parseInt(t.substring(1),16))})}function n(t,r){for(var e=[],n=0;n<r;n++)e.push(t>>>n&1);return e}function i(t,r){for(var e=[],n=r-1;n>=0;n--)e.push(t>>>n&1);return e}function o(t,r,e){for(var n=-1,i=0,o=0,a=0;a<e;a++)o+=t[a]*r[a];return o}function a(t,r,e,n,i){for(var o=0;o<i;o++)for(var a=0;a<r;a++)t[o*r+a]=e[o]+n[a]}function u(t,r){var e=new Array(r);return e[0]=t,function(t){for(var r=new Array(t.length+1),e=0;e<t.length;e++)r[e]=t[e];return r}(e)}function h(t){var r=t.length,e=[],n=[],i=0;for(;i<r;){for(var o=0;o<8&&i<r;o++,i++){var a=t[i];e.push(a>>>0)}for(var u=0;u<8&&i<r;u++,i++){var a=t[i];n.push(a>>>0)}}return[e,n]}function s(t,r){return t+r}function c(t,r){return t-r}function l(t,r){return t^r}function f(t,r){return t&r}function p(t,r){return t|r}function d(t,r){return t>>>r}function g(t,r){return t<<r}var m=function(){function t(t,r){this._bits=t,this._length=r}return t}();return t.prototype={addData:function(t){var r=e(t);this._dataList.push(r),this._dataCache=null},make:function(){this._makeImpl(!1,this._getBestMaskPattern())},isDark:function(t,r){if(t<0||this._moduleCount<=t||r<0||this._moduleCount<=r)return!1;return this._modules[t][r]},getModuleCount:function(){return this._moduleCount},_makeImpl:function(t,r){this._moduleCount=this._typeNumber*4+17,this._modules=function(t,r){for(var e=[],n=0;n<t;n++){e.push(new Array(t));for(var i=0;i<t;i++)e[n][i]=null}return e}(this._moduleCount),this._setupPositionProbePattern(0,0),this._setupPositionProbePattern(this._moduleCount-7,0),this._setupPositionProbePattern(0,this._moduleCount-7),this._setupPositionAdjustPattern(),this._setupTimingPattern(),this._setupTypeInfo(r,t),this._setupTypeNumber(t),this._modules=this._modules;var e=this._createData(this._moduleCount,this._dataList);this._mapData(e,0,0)},_createData:function(t,r){var e=this._getBestMaskPattern?null:null},_getBestMaskPattern:function(){for(var t=0,r=0,e=0;e<8;e++){this._makeImpl(!0,e);var n=this._getLostPoint();(0==e||n<r)&&(r=n,t=e)}return t},_setupPositionProbePattern:function(t,r){for(var e=-1;e<=7;e++)if(!(t+e<=-1||this._moduleCount<=t+e))for(var n=-1;n<=7;n++)this._moduleCount<=r+n||r+n<=-1||(0<=e&&e<=6&&(0==n||6==n)||0<=n&&n<=6&&(0==e||6==e)||2<=e&&e<=4&&2<=n&&n<=4?this._modules[t+e][r+n]=!0:this._modules[t+e][r+n]=!1)},_setupPositionAdjustPattern:function(){for(var t=this._getPatternPosition(),r=0;r<t.length;r++)for(var e=0;e<t.length;e++){var n=t[r],i=t[e];if(null==this._modules[n][i])for(var o=-2;o<=2;o++)for(var a=-2;a<=2;a++)this._modules[n+o][i+a]=-2==o||2==o||-2==a||2==a||0==o&&0==a}},_setupTimingPattern:function(){for(var t=8;t<this._moduleCount-8;t++)null==this._modules[t][6]&&(this._modules[t][6]=t%2==0);for(var r=8;r<this._moduleCount-8;r++)null==this._modules[6][r]&&(this._modules[6][r]=r%2==0)},_setupTypeNumber:function(t){for(var r=this._getBCHTypeNumber(this._typeNumber),e=0;e<18;e++){var n=!t&&1==(r>>e&1);this._modules[Math.floor(e/3)][e%3+this._moduleCount-8-3]=n}for(var i=0;i<18;i++){var n=!t&&1==(r>>i&1);this._modules[i%3+this._moduleCount-8-3][Math.floor(i/3)]=n}},_setupTypeInfo:function(t,r){for(var e=this._getBCHTypeInfo(this._errorCorrectLevel<<3|r),n=0;n<15;n++){var i=!t&&1==(e>>n&1);n<6?this._modules[n][8]=i:n<8?this._modules[n+1][8]=i:this._modules[this._moduleCount-15+n][8]=i}for(var o=0;o<15;o++){var i=!t&&1==(e>>o&1);o<8?this._modules[8][this._moduleCount-o-1]=i:o<9?this._modules[8][15-o-1+1]=i:this._modules[8][15-o-1]=i}this._modules[this._moduleCount-8][8]=!t},_mapData:function(t,r,e){for(var n=-1,i=r;i<this._moduleCount;i+=2){6==i&&i--;for(var o=0;o<2;o++)for(var a=0;a<this._moduleCount;a++){var u=i+o,h=this._moduleCount-1-a,s=this._modules[u][h];if(null==s){var c=-1;n<t.length&&(c=t[n]);(n+1>=t.length||c<0)&&(c=0);var l=1==(c>>(7-o)&1);this._modules[u][h]=l}}},_getPatternPosition:function(){return[[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],[6,30,56,82],[6,30,58,86],[6,34,62,90],[6,28,50,72,94],[6,26,50,74,98],[6,30,54,78,102],[6,28,54,80,106],[6,32,58,84,110],[6,30,58,86,114],[6,34,62,90,118],[6,26,50,74,98,122],[6,30,54,78,102,126],[6,26,52,78,104,130],[6,30,56,82,108,134],[6,34,60,86,112,138],[6,30,58,86,114,142],[6,34,62,90,118,146],[6,30,54,78,102,126,150],[6,24,50,76,102,128,154],[6,28,54,80,106,132,158],[6,32,58,84,110,136,162],[6,26,54,82,110,138,166],[6,30,58,86,114,142,170]]},_getBCHTypeNumber:function(t){for(var r=t<<12;0<=BCHTypeNumber_D(t=r);)t^=BCHTypeNumber_D(t)<<G15;return(t<<12|r)>>>0},_getBCHTypeInfo:function(t){for(var r=t<<10;0<=BCHTypeInfo_D(r);)r^=BCHTypeInfo_D(r)<<G15;return(21522^r)>>>0},_getLostPoint:function(){for(var t=this._moduleCount,r=0,e=0;e<t;e++)for(var n=0;n<t;n++){for(var i=0,o=this._modules[e][n],a=-1;a<=1;a++)if(!(e+a<0||t<=e+a))for(var u=-1;u<=1;u++)n+u<0||t<=n+u||(0==a&&0==u||o==this._modules[e+a][n+u]&&i++);i>5&&(r+=3+i-5)}for(var e=0;e<t-1;e++)for(var n=0;n<t-1;n++){var h=0;this._modules[e][n]&&h++,this._modules[e+1][n]&&h++,this._modules[e][n+1]&&h++,this._modules[e+1][n+1]&&h++,0!=h&&4!=h||(r+=3)}for(var e=0;e<t;e++)for(var n=0;n<t-6;n++)this._modules[e][n]&&!this._modules[e][n+1]&&this._modules[e][n+2]&&this._modules[e][n+3]&&this._modules[e][n+4]&&!this._modules[e][n+5]&&this._modules[e][n+6]&&(r+=40);for(var n=0;n<t;n++)for(var e=0;e<t-6;e++)this._modules[e][n]&&!this._modules[e+1][n]&&this._modules[e+2][n]&&this._modules[e+3][n]&&this._modules[e+4][n]&&!this._modules[e+5][n]&&this._modules[e+6][n]&&(r+=40);for(var i=0,e=0;e<t;e++)for(var n=0;n<t;n++)this._modules[e][n]&&i++;var s=Math.abs(100*i/t/t-50)/5;return r+=10*s},_createData:function(t,r){var e=0,n=null,i=QRUtil.getRSBlocks(this._typeNumber,this._errorCorrectLevel);for(var o=0;o<i.length;o++)e+=i[o].dataCount;var a=new QRBitBuffer;for(var o=0;o<r.length;o++){var u=r[o];a.put(u.length,4);for(var h=0;h<u.length;h++)a.put(u[h],8)}for(var s=0;s<8;s++)a.put(0,8);for(;a.length+4<8*e;)a.put(0,1);for(;a.length<8*e;)a.put(0,8);return QRUtil.createData(this._typeNumber,this._errorCorrectLevel,r)},getModules:function(){return this._modules}};var QRUtil={PATTERN_POSITION_TABLE:[[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],[6,30,56,82],[6,30,58,86],[6,34,62,90],[6,28,50,72,94],[6,26,50,74,98],[6,30,54,78,102],[6,28,54,80,106],[6,32,58,84,110],[6,30,58,86,114],[6,34,62,90,118],[6,26,50,74,98,122],[6,30,54,78,102,126],[6,26,52,78,104,130],[6,30,56,82,108,134],[6,34,60,86,112,138],[6,30,58,86,114,142],[6,34,62,90,118,146],[6,30,54,78,102,126,150],[6,24,50,76,102,128,154],[6,28,54,80,106,132,158],[6,32,58,84,110,136,162],[6,26,54,82,110,138,166],[6,30,58,86,114,142,170]],G15:1335,G18:7973,G15_MASK:21522,getBCHTypeNumber:function(t){for(var r=t<<12;0<=QRUtil.getBCHDigit(r)-QRUtil.G18;)r^=QRUtil.G18<<QRUtil.getBCHDigit(r)-QRUtil.G18;return(t<<12|r)>>>0},getBCHTypeInfo:function(t){for(var r=t<<10;0<=QRUtil.getBCHDigit(r)-QRUtil.G15;)r^=QRUtil.G15<<QRUtil.getBCHDigit(r)-QRUtil.G15;return(QRUtil.G15_MASK^r)>>>0},getBCHDigit:function(t){for(var r=0;0!=t;)r++,t>>>=1;return r},getPatternPosition:function(t){return QRUtil.PATTERN_POSITION_TABLE[t-1]},getMask:function(t,r,e){switch(t){case 0:return(r+e)%2==0;case 1:return r%2==0;case 2:return e%3==0;case 3:return(r+e)%3==0;case 4:return(Math.floor(r/2)+Math.floor(e/3))%2==0;case 5:return r*e%2+r*e%3==0;case 6:return(r*e%2+r*e%3)%2==0;case 7:return(r*e%3+(r+e)%2)%2==0;default:throw"bad maskPattern:"+t}},getErrorCorrectPolynomial:function(t){for(var r=new QRPolynomial([1],0),e=0;e<t;e++)r=r.multiply(new QRPolynomial([1,QRMath.gexp(e)],0));return r},getLengthInBits:function(t,r){if(1<=r&&r<10)switch(t){case 1:return 10;case 2:return 9;case 4:return 8;case 8:return 8;default:throw"mode:"+t}else if(r<27)switch(t){case 1:return 12;case 2:return 11;case 4:return 16;case 8:return 10;default:throw"mode:"+t}else{if(!(r<41))throw"type:"+r;switch(t){case 1:return 14;case 2:return 13;case 4:return 16;case 8:return 12;default:throw"mode:"+t}}},getLostPoint:function(t){for(var r=t.getModuleCount(),e=0,n=0;n<r;n++)for(var i=0;i<r;i++){for(var o=0,a=t.isDark(n,i),u=-1;u<=1;u++)if(!(n+u<0||r<=n+u))for(var h=-1;h<=1;h++)i+h<0||r<=i+h||(0==u&&0==h||a==t.isDark(n+u,i+h)&&o++);o>5&&(e+=3+o-5)}for(var n=0;n<r-1;n++)for(var i=0;i<r-1;i++){var s=0;t.isDark(n,i)&&s++,t.isDark(n+1,i)&&s++,t.isDark(n,i+1)&&s++,t.isDark(n+1,i+1)&&s++,0!=s&&4!=s||(e+=3)}for(var n=0;n<r;n++)for(var i=0;i<r-6;i++)t.isDark(n,i)&&!t.isDark(n,i+1)&&t.isDark(n,i+2)&&t.isDark(n,i+3)&&t.isDark(n,i+4)&&!t.isDark(n,i+5)&&t.isDark(n,i+6)&&(e+=40);for(var i=0;i<r;i++)for(var n=0;n<r-6;n++)t.isDark(n,i)&&!t.isDark(n+1,i)&&t.isDark(n+2,i)&&t.isDark(n+3,i)&&t.isDark(n+4,i)&&!t.isDark(n+5,i)&&t.isDark(n+6,i)&&(e+=40);for(var o=0,n=0;n<r;n++)for(var i=0;i<r;i++)t.isDark(n,i)&&o++;var c=Math.abs(100*o/r/r-50)/5;return e+=10*c,e},createData:function(t,r,e){var n=QRUtil.getRSBlocks(t,r),i=new QRBitBuffer;for(var o=0;o<e.length;o++){var a=e[o];i.put(a.mode,4),i.put(a.getLength(),QRUtil.getLengthInBits(a.mode,t)),a.write(i)}var u=0;for(var o=0;o<n.length;o++)u+=n[o].dataCount;if(i.getLengthInBits()>8*u)throw"code length overflow. ("+i.getLengthInBits()+">"+8*u+")";for(i.getLengthInBits()+4<=8*u&&i.put(0,4);i.getLengthInBits()%8!=0;)i.putBit(!1);for(;!(i.getLengthInBits()>=8*u);){if(i.put(236,8),i.getLengthInBits()>=8*u)break;i.put(17,8)}return QRUtil.createBytes(i,n)},createBytes:function(t,r){for(var e=0,n=0,i=0,o=new Array(r.length),a=new Array(r.length),u=0;u<r.length;u++){var h=r[u].dataCount,s=r[u].totalCount-h;n=Math.max(n,h),i=Math.max(i,s),o[u]=new Array(h);for(var c=0;c<o[u].length;c++)o[u][c]=255&t.buffer[c+e];e+=h;var l=QRUtil.getErrorCorrectPolynomial(s),f=new QRPolynomial(o[u],l.getLength()-1).mod(l);a[u]=new Array(l.getLength()-1);for(var c=0;c<a[u].length;c++){var p=c+f.getLength()-a[u].length;a[u][c]=p>=0?f.get(p):0}}var d=0;for(var c=0;c<r.length;c++)d+=r[c].totalCount;for(var g=new Array(d),m=0,c=0;c<n;c++)for(var u=0;u<r.length;u++)c<o[u].length&&(g[m++]=o[u][c]);for(var c=0;c<i;c++)for(var u=0;u<r.length;u++)c<a[u].length&&(g[m++]=a[u][c]);return g},getRSBlocks:function(t,r){for(var e=QRRSBlock.getRSBlocks(t,r),n=[],i=0,o=0;o<e.length;o++)n.push(e[o].totalCount);return QRRSBlock.getRSBlocks(t,r)}};function QRRSBlock(t,r){this.totalCount=t,this.dataCount=r}QRRSBlock.RS_BLOCK_TABLE=[[1,26,19],[1,26,16],[1,26,13],[1,26,9],[1,44,34],[1,44,28],[1,44,22],[1,44,16],[1,70,55],[1,70,44],[2,35,17],[2,35,13],[1,100,80],[2,50,32],[2,50,24],[4,25,9],[1,134,108],[2,67,43],[2,33,15,2,34,16],[2,33,11,2,34,12],[2,86,68],[4,43,27],[4,43,19],[4,43,15],[2,98,78],[4,49,31],[2,32,14,4,33,15],[4,39,13,1,40,14],[2,121,97],[2,60,38,2,61,39],[4,40,18,2,41,19],[4,40,14,2,41,15],[2,146,116],[3,58,36,2,59,37],[4,36,16,4,37,17],[4,36,12,4,37,13],[2,86,68,2,87,69],[4,69,43,1,70,44],[6,43,19,2,44,20],[6,43,15,2,44,16],[4,101,81],[1,80,50,4,81,51],[4,50,22,4,51,23],[3,36,12,8,37,13],[2,116,92,2,117,93],[6,58,36,2,59,37],[4,46,20,6,47,21],[7,42,14,4,43,15],[4,133,107],[8,59,37,1,60,38],[8,44,20,4,45,21],[12,33,11,4,34,12],[3,145,115,1,146,116],[4,64,40,5,65,41],[11,36,16,5,37,17],[11,36,12,5,37,13],[5,109,87,1,110,88],[5,65,41,5,66,42],[5,54,24,7,55,25],[11,36,12,7,37,13],[5,122,98,1,123,99],[7,73,45,3,74,46],[15,43,19,2,44,20],[3,45,15,13,46,16],[1,135,107,5,136,108],[10,74,46,1,75,47],[1,50,22,15,51,23],[2,42,14,17,43,15],[5,150,120,1,151,121],[9,69,43,4,70,44],[17,50,22,1,51,23],[2,42,14,19,43,15],[3,141,113,4,142,114],[3,70,44,11,71,45],[17,47,21,4,48,22],[9,39,13,16,40,14],[3,135,107,5,136,108],[3,67,41,13,68,42],[15,54,24,5,55,25],[15,43,15,10,44,16],[4,144,116,4,145,117],[17,68,42],[17,50,22,6,51,23],[19,46,16,6,47,17],[2,139,111,7,140,112],[17,74,46],[7,54,24,16,55,25],[34,37,13],[4,151,121,5,152,122],[4,75,47,14,76,48],[11,54,24,14,55,25],[16,45,15,14,46,16],[6,147,117,4,148,118],[6,73,45,14,74,46],[11,54,24,16,55,25],[30,46,16,2,47,17],[8,132,106,4,133,107],[8,75,47,13,76,48],[7,54,24,22,55,25],[22,45,15,13,46,16],[10,142,114,2,143,115],[19,74,46,4,75,47],[28,50,22,6,51,23],[33,46,16,4,47,17],[8,152,122,4,153,123],[22,73,45,3,74,46],[8,53,23,26,54,24],[12,45,15,28,46,16],[3,147,117,10,148,118],[3,73,45,23,74,46],[4,54,24,31,55,25],[11,45,15,31,46,16],[7,146,116,7,147,117],[21,73,45,7,74,46],[1,53,23,37,54,24],[19,45,15,26,46,16],[5,145,115,10,146,116],[19,75,47,10,76,48],[15,54,24,25,55,25],[23,45,15,25,46,16],[13,145,115,3,146,116],[2,74,46,29,75,47],[42,54,24,1,55,25],[23,45,15,28,46,16],[17,145,115],[10,74,46,23,75,47],[10,54,24,35,55,25],[19,45,15,35,46,16],[17,145,115,1,146,116],[14,74,46,21,75,47],[29,54,24,19,55,25],[11,45,15,46,46,16],[13,145,115,6,146,116],[14,74,46,23,75,47],[44,54,24,7,55,25],[59,46,16,1,47,17],[12,151,121,7,152,122],[12,75,47,26,76,48],[39,54,24,14,55,25],[22,45,15,41,46,16],[6,151,121,14,152,122],[6,75,47,34,76,48],[46,54,24,10,55,25],[2,45,15,64,46,16],[17,152,122,4,153,123],[29,74,46,14,75,47],[49,54,24,10,55,25],[24,45,15,46,46,16],[4,152,122,18,153,123],[13,74,46,32,75,47],[48,54,24,14,55,25],[42,45,15,32,46,16],[20,147,117,4,148,118],[40,75,47,7,76,48],[43,54,24,22,55,25],[10,45,15,67,46,16],[19,148,118,6,149,119],[18,75,47,31,76,48],[34,54,24,34,55,25],[20,45,15,61,46,16]];function QRPolynomial(t,r){if(null==t.length)throw t.length+"/"+r;for(var e=0;e<t.length&&0==t[e];)e++;this.num=new Array(t.length-e+r);for(var n=0;n<t.length-e;n++)this.num[n]=t[n+e]}function QRMath(t){return 1<=t&&t<255?EXP_TABLE[t]:0}function QRBitBuffer(){this.buffer=[],this.length=0}for(var EXP_TABLE=new Array(256),LOG_TABLE=new Array(256),i=0;i<8;i++)EXP_TABLE[i]=1<<i;for(var i=8;i<256;i++)EXP_TABLE[i]=EXP_TABLE[i-4]^EXP_TABLE[i-5]^EXP_TABLE[i-6]^EXP_TABLE[i-8];for(var i=0;i<255;i++)LOG_TABLE[EXP_TABLE[i]]=i;function QR8bitByte(t){this.mode=4,this.data=t}return QRPolynomial.prototype={get:function(t){return this.num[t]},getLength:function(){return this.num.length},multiply:function(t){for(var r=new Array(this.getLength()+t.getLength()-1),e=0;e<this.getLength();e++)for(var n=0;n<t.getLength();n++)r[e+n]^=QRMath.gexp(QRMath.glog(this.get(e))+QRMath.glog(t.get(n)));return new QRPolynomial(r,0)},mod:function(t){if(this.getLength()-t.getLength()<0)return this;for(var r=QRMath.glog(this.get(0))-QRMath.glog(t.get(0)),e=new Array(this.getLength()),n=0;n<this.getLength();n++)e[n]=this.get(n);for(var n=0;n<t.getLength();n++)e[n]^=QRMath.gexp(QRMath.glog(t.get(n))+r);return new QRPolynomial(e,0).mod(t)}},QRMath={glog:function(t){if(t<1)throw"glog("+t+")";return LOG_TABLE[t]},gexp:function(t){for(;t<0;)t+=255;for(;t>=256;)t-=255;return EXP_TABLE[t]}},QRBitBuffer.prototype={get:function(t){var r=Math.floor(t/8);return 1==(this.buffer[r]>>>7-t%8&1)},put:function(t,r){for(var e=0;e<r;e++)this.putBit(1==(t>>>r-e-1&1))},getLengthInBits:function(){return this.length},putBit:function(t){var r=Math.floor(this.length/8);this.buffer.length<=r&&this.buffer.push(0),t&&(this.buffer[r]|=128>>>this.length%8),this.length++}},QR8bitByte.prototype={getLength:function(){return this.data.length},write:function(t){for(var r=0;r<this.data.length;r++)t.put(this.data[r],8)}},QRRSBlock.getRSBlocks=function(t,r){var e=QRRSBlock.getRsBlockTable(t,r);if(null==e)throw"bad rs block @ typeNumber:"+t+"/errorCorrectLevel:"+r;for(var n=e.length/3,i=[],o=0;o<n;o++)for(var a=e[3*o+0],u=e[3*o+1],h=e[3*o+2],s=0;s<a;s++)i.push(new QRRSBlock(u,h));return i},QRRSBlock.getRsBlockTable=function(t,r){switch(r){case 1:return QRRSBlock.RS_BLOCK_TABLE[4*(t-1)+0];case 0:return QRRSBlock.RS_BLOCK_TABLE[4*(t-1)+1];case 3:return QRRSBlock.RS_BLOCK_TABLE[4*(t-1)+2];case 2:return QRRSBlock.RS_BLOCK_TABLE[4*(t-1)+3];default:return}},QRUtil.getErrorCorrectPolynomial=function(t){for(var r=new QRPolynomial([1],0),e=0;e<t;e++)r=r.multiply(new QRPolynomial([1,QRMath.gexp(e)],0));return r},QRUtil.createData=function(t,r,e){for(var n=QRUtil.getRSBlocks(t,r),i=new QRBitBuffer,o=0;o<e.length;o++){var a=e[o];i.put(a.mode,4),i.put(a.getLength(),QRUtil.getLengthInBits(a.mode,t)),a.write(i)}var u=0;for(var o=0;o<n.length;o++)u+=n[o].dataCount;if(i.getLengthInBits()>8*u)throw"code length overflow. ("+i.getLengthInBits()+">"+8*u+")";for(i.getLengthInBits()+4<=8*u&&i.put(0,4);i.getLengthInBits()%8!=0;)i.putBit(!1);for(;!(i.getLengthInBits()>=8*u);){if(i.put(236,8),i.getLengthInBits()>=8*u)break;i.put(17,8)}return QRUtil.createBytes(i,n)},QRUtil.createBytes=function(t,r){for(var e=0,n=0,i=0,o=new Array(r.length),a=new Array(r.length),u=0;u<r.length;u++){var h=r[u].dataCount,s=r[u].totalCount-h;n=Math.max(n,h),i=Math.max(i,s),o[u]=new Array(h);for(var c=0;c<o[u].length;c++)o[u][c]=255&t.buffer[c+e];e+=h;var l=QRUtil.getErrorCorrectPolynomial(s),f=new QRPolynomial(o[u],l.getLength()-1).mod(l);a[u]=new Array(l.getLength()-1);for(var c=0;c<a[u].length;c++){var p=c+f.getLength()-a[u].length;a[u][c]=p>=0?f.get(p):0}}var d=0;for(var c=0;c<r.length;c++)d+=r[c].totalCount;for(var g=new Array(d),m=0,c=0;c<n;c++)for(var u=0;u<r.length;u++)c<o[u].length&&(g[m++]=o[u][c]);for(var c=0;c<i;c++)for(var u=0;u<r.length;u++)c<a[u].length&&(g[m++]=a[u][c]);return g},QR8bitByte},qrcode.stringToBytes=function(t){return t.split("").map(function(t){return t.charCodeAt(0)})},qrcode.stringToBytesFuncs={"default":function(t){return t.split("").map(function(t){return t.charCodeAt(0)})}},qrcode.createStringToBytes=function(t,r){},qrcode.prototype={};
+</script>
+
+<script>
+/* =========================================================
+   Main App Logic
+   ========================================================= */
 (function () {
-  // ---------- State ----------
-  let tipPercent = 18;
-  let people = 1;
+  "use strict";
 
-  // ---------- Elements ----------
-  const billInput   = document.getElementById('bill');
-  const customTip   = document.getElementById('customTip');
-  const tipButtons  = document.querySelectorAll('.tip-btn');
-  const peopleCount = document.getElementById('peopleCount');
-  const peopleLabel = document.getElementById('peopleLabel');
-  const minusBtn    = document.getElementById('minusBtn');
-  const plusBtn     = document.getElementById('plusBtn');
-  const resetBtn    = document.getElementById('resetBtn');
+  // -------- DOM refs --------
+  const tabs           = document.querySelectorAll('.tab');
+  const tabContents    = document.querySelectorAll('.tab-content');
+  const canvas         = document.getElementById('qrCanvas');
+  const ctx            = canvas.getContext('2d');
+  const placeholder    = document.getElementById('placeholder');
+  const errorMsg       = document.getElementById('errorMsg');
+  const downloadBtn    = document.getElementById('downloadBtn');
+  const copyBtn        = document.getElementById('copyBtn');
+  const printBtn       = document.getElementById('printBtn');
+  const advToggle      = document.getElementById('advToggle');
+  const advPanel       = document.getElementById('advPanel');
 
-  const resBill       = document.getElementById('resBill');
-  const resTip        = document.getElementById('resTip');
-  const resTotal      = document.getElementById('resTotal');
-  const resPerPerson  = document.getElementById('resPerPerson');
-  const perPersonBox  = document.getElementById('perPersonBox');
-  const perPersonSub  = document.getElementById('perPersonSub');
+  const fgColor        = document.getElementById('fgColor');
+  const fgHex          = document.getElementById('fgHex');
+  const bgColor        = document.getElementById('bgColor');
+  const bgHex          = document.getElementById('bgHex');
+  const sizeRange      = document.getElementById('sizeRange');
+  const sizeValue      = document.getElementById('sizeValue');
+  const eccSelect      = document.getElementById('eccSelect');
+  const marginRange    = document.getElementById('marginRange');
+  const marginValue    = document.getElementById('marginValue');
 
-  // ---------- Helpers ----------
-  const fmt = (n) => '$' + (isFinite(n) ? n.toFixed(2) : '0.00');
+  const toast = document.getElementById('toast');
 
-  // ---------- Render ----------
-  function calculate() {
-    const bill = parseFloat(billInput.value) || 0;
-    const tipAmount = bill * (tipPercent / 100);
-    const total = bill + tipAmount;
-    const perPerson = people > 0 ? total / people : total;
+  // -------- State --------
+  let currentTab = 'url';
+  let lastPayload = '';
 
-    resBill.textContent  = fmt(bill);
-    resTip.textContent   = fmt(tipAmount);
-    resTotal.textContent = fmt(total);
+  // -------- Helpers --------
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toast._t);
+    toast._t = setTimeout(() => toast.classList.remove('show'), 2000);
+  }
 
-    if (people > 1) {
-      perPersonBox.style.display = 'block';
-      resPerPerson.textContent = fmt(perPerson);
-      perPersonSub.textContent =
-        `${people} people × ${fmt(perPerson)}  ·  includes ${fmt(tipAmount / people)} tip each`;
-    } else {
-      perPersonBox.style.display = 'none';
+  function showError(msg) {
+    errorMsg.textContent = msg;
+    errorMsg.classList.add('show');
+  }
+  function clearError() {
+    errorMsg.textContent = '';
+    errorMsg.classList.remove('show');
+  }
+
+  function escapeWifi(str) {
+    return String(str).replace(/([\\;,:"])/g, '\\$1');
+  }
+
+  // Build the string the QR code will contain based on the active tab
+  function buildPayload() {
+    switch (currentTab) {
+      case 'url': {
+        const v = document.getElementById('urlInput').value.trim();
+        if (!v) return '';
+        // Auto-prepend https:// if the user typed just a domain
+        if (!/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(v)) return 'https://' + v;
+        return v;
+      }
+      case 'text': {
+        return document.getElementById('textInput').value;
+      }
+      case 'wifi': {
+        const ssid = document.getElementById('wifiSsid').value;
+        const pass = document.getElementById('wifiPassword').value;
+        const sec  = document.getElementById('wifiSecurity').value;
+        const hid  = document.getElementById('wifiHidden').value;
+        if (!ssid) return '';
+        return 'WIFI:T:' + sec + ';S:' + escapeWifi(ssid) + ';' +
+               (sec === 'nopass' ? '' : 'P:' + escapeWifi(pass) + ';') +
+               (hid === 'true' ? 'H:true;' : '') + ';';
+      }
+      case 'email': {
+        const to      = document.getElementById('emailTo').value.trim();
+        const subject = document.getElementById('emailSubject').value.trim();
+        const body    = document.getElementById('emailBody').value.trim();
+        if (!to) return '';
+        const params = [];
+        if (subject) params.push('subject=' + encodeURIComponent(subject));
+        if (body)    params.push('body=' + encodeURIComponent(body));
+        return 'mailto:' + to + (params.length ? '?' + params.join('&') : '');
+      }
+      case 'phone': {
+        const num = document.getElementById('phoneNumber').value.trim();
+        if (!num) return '';
+        return 'tel:' + num.replace(/\s+/g, '');
+      }
+      case 'sms': {
+        const num  = document.getElementById('smsNumber').value.trim();
+        const body = document.getElementById('smsBody').value.trim();
+        if (!num) return '';
+        return 'SMSTO:' + num.replace(/\s+/g, '') + (body ? ':' + body : '');
+      }
+      default: return '';
     }
   }
 
-  // ---------- Tip selection ----------
-  tipButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      tipButtons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      tipPercent = parseFloat(btn.dataset.tip);
-      customTip.value = '';
-      calculate();
+  // -------- QR rendering --------
+  function render() {
+    clearError();
+
+    const payload = buildPayload();
+    lastPayload = payload;
+
+    if (!payload) {
+      canvas.style.display = 'none';
+      placeholder.style.display = 'block';
+      downloadBtn.disabled = true;
+      copyBtn.disabled = true;
+      printBtn.disabled = true;
+      return;
+    }
+
+    // Try to find the smallest type number that fits
+    let qr = null;
+    const ecc = eccSelect.value;
+    for (let type = 4; type <= 40; type++) {
+      try {
+        const q = qrcode(type, ecc);
+        q.addData(payload);
+        q.make();
+        qr = q;
+        break;
+      } catch (e) {
+        // too big for this type, try next
+      }
+    }
+
+    if (!qr) {
+      showError('This content is too long for a QR code. Try shortening it.');
+      canvas.style.display = 'none';
+      placeholder.style.display = 'block';
+      downloadBtn.disabled = true;
+      copyBtn.disabled = true;
+      printBtn.disabled = true;
+      return;
+    }
+
+    const moduleCount = qr.getModuleCount();
+    const margin      = parseInt(marginRange.value, 10);
+    const size        = parseInt(sizeRange.value, 10);
+
+    // Total modules including quiet zone margin
+    const totalModules = moduleCount + margin * 2;
+
+    // Ensure we draw at integer pixels for crisp output.
+    const pixelSize = Math.max(1, Math.floor(size / totalModules));
+    const finalSize = pixelSize * totalModules;
+
+    canvas.width  = finalSize;
+    canvas.height = finalSize;
+    canvas.style.width  = Math.min(finalSize, 380) + 'px';
+    canvas.style.height = 'auto';
+
+    const fg = fgColor.value;
+    const bg = bgColor.value;
+
+    // Background
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, finalSize, finalSize);
+
+    // Modules
+    ctx.fillStyle = fg;
+    for (let row = 0; row < moduleCount; row++) {
+      for (let col = 0; col < moduleCount; col++) {
+        if (qr.isDark(row, col)) {
+          const x = (col + margin) * pixelSize;
+          const y = (row + margin) * pixelSize;
+          ctx.fillRect(x, y, pixelSize, pixelSize);
+        }
+      }
+    }
+
+    // Show canvas
+    canvas.style.display = 'block';
+    placeholder.style.display = 'none';
+    downloadBtn.disabled = false;
+    copyBtn.disabled = false;
+    printBtn.disabled = false;
+  }
+
+  // -------- Tab switching --------
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      currentTab = tab.dataset.tab;
+
+      tabContents.forEach(c => c.classList.remove('active'));
+      document.querySelector(`.tab-content[data-content="${currentTab}"]`).classList.add('active');
+
+      render();
     });
   });
 
-  customTip.addEventListener('input', () => {
-    const v = parseFloat(customTip.value);
-    if (!isNaN(v) && v >= 0) {
-      tipPercent = v;
-      tipButtons.forEach(b => b.classList.remove('active'));
-      calculate();
-    } else if (customTip.value === '') {
-      tipPercent = 18;
-      document.querySelector('.tip-btn[data-tip="18"]').classList.add('active');
-      calculate();
+  // -------- Input listeners --------
+  document.querySelectorAll('input, textarea, select').forEach(el => {
+    el.addEventListener('input', render);
+    el.addEventListener('change', render);
+  });
+
+  // -------- Advanced panel toggle --------
+  advToggle.addEventListener('click', () => {
+    advToggle.classList.toggle('open');
+    advPanel.classList.toggle('open');
+  });
+
+  // -------- Color sync --------
+  function isValidHex(v) { return /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(v); }
+
+  fgColor.addEventListener('input', () => {
+    fgHex.value = fgColor.value.toUpperCase();
+    render();
+  });
+  fgHex.addEventListener('input', () => {
+    if (isValidHex(fgHex.value)) {
+      fgColor.value = fgHex.value;
+      render();
     }
   });
 
-  // ---------- Bill input ----------
-  billInput.addEventListener('input', calculate);
-
-  // ---------- Split buttons ----------
-  function updatePeople() {
-    peopleCount.textContent = people;
-    peopleLabel.textContent = people === 1 ? 'person' : 'people';
-    minusBtn.disabled = people <= 1;
-    minusBtn.style.opacity = people <= 1 ? 0.4 : 1;
-    calculate();
-  }
-
-  minusBtn.addEventListener('click', () => {
-    if (people > 1) { people--; updatePeople(); }
+  bgColor.addEventListener('input', () => {
+    bgHex.value = bgColor.value.toUpperCase();
+    render();
+  });
+  bgHex.addEventListener('input', () => {
+    if (isValidHex(bgHex.value)) {
+      bgColor.value = bgHex.value;
+      render();
+    }
   });
 
-  plusBtn.addEventListener('click', () => {
-    if (people < 99) { people++; updatePeople(); }
+  // -------- Sliders --------
+  sizeRange.addEventListener('input', () => {
+    sizeValue.textContent = sizeRange.value + 'px';
+    render();
+  });
+  marginRange.addEventListener('input', () => {
+    marginValue.textContent = marginRange.value;
+    render();
   });
 
-  // ---------- Reset ----------
-  resetBtn.addEventListener('click', () => {
-    billInput.value = '';
-    customTip.value = '';
-    tipPercent = 18;
-    people = 1;
-    tipButtons.forEach(b => b.classList.remove('active'));
-    document.querySelector('.tip-btn[data-tip="18"]').classList.add('active');
-    updatePeople();
-    calculate();
-    billInput.focus();
+  // -------- Download --------
+  downloadBtn.addEventListener('click', () => {
+    canvas.toBlob(blob => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'qrcode-' + Date.now() + '.png';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('Downloaded!');
+    }, 'image/png');
   });
 
-  // ---------- Init ----------
-  updatePeople();
-  calculate();
+  // -------- Copy to clipboard --------
+  copyBtn.addEventListener('click', async () => {
+    try {
+      const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+      if (navigator.clipboard && window.ClipboardItem) {
+        await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+        showToast('Copied to clipboard!');
+      } else {
+        // Fallback for older browsers
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'qrcode-' + Date.now() + '.png';
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('Downloaded (copy not supported)');
+      }
+    } catch (err) {
+      showToast('Could not copy — try downloading');
+    }
+  });
+
+  // -------- Print --------
+  printBtn.addEventListener('click', () => {
+    const dataUrl = canvas.toDataURL('image/png');
+    const win = window.open('', '_blank');
+    win.document.write(
+      '<html><head><title>Print QR Code</title></head>' +
+      '<body style="margin:0;display:flex;align-items:center;justify-content:center;height:100vh;">' +
+      '<img src="' + dataUrl + '" style="max-width:90vw;max-height:90vh;" onload="window.print();window.close();" />' +
+      '</body></html>'
+    );
+    win.document.close();
+  });
+
+  // -------- Initial render --------
+  render();
+
 })();
 </script>
 
