@@ -1,1042 +1,818 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>salaat · map</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.min.js"></script>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            background: #f5f7fa;
-            font-family: 'Inter', -apple-system, system-ui, sans-serif;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            color: #1a2e3b;
-            letter-spacing: -0.01em;
-        }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Free Refinance Calculator — See Your New Monthly Payment</title>
+<meta name="description" content="Calculate your refinance savings in seconds. See your new monthly payment, total interest, and lifetime savings. Free, no obligation." />
 
-        .top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 2rem;
-            background: #ffffff;
-            border-bottom: 1px solid #e9ecf0;
-            font-weight: 420;
-        }
-        .top h2 {
-            font-weight: 440;
-            font-size: 1.4rem;
-            color: #0b2b3a;
-            letter-spacing: -0.3px;
-        }
+<style>
+  :root {
+    --brand: #0f766e;
+    --brand-dark: #115e59;
+    --accent: #f59e0b;
+    --ink: #0f172a;
+    --muted: #64748b;
+    --line: #e2e8f0;
+    --bg: #f8fafc;
+    --white: #ffffff;
+    --success: #16a34a;
+  }
 
-        .method-wrap {
-            background: #f1f4f7;
-            border-radius: 40px;
-            padding: 0.3rem 0.3rem 0.3rem 0rem;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border: 1px solid #dde3e9;
-        }
-        .method-wrap span {
-            color: #1b4759;
-            font-weight: 500;
-            font-size: 0.85rem;
-            padding-left: 14px;
-            white-space: nowrap;
-        }
-        .method-wrap select {
-            background: white;
-            border: none;
-            border-radius: 30px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            padding: 0.45rem 2rem 0.45rem 1rem;
-            outline: none;
-            color: #103745;
-            cursor: pointer;
-            border: 1px solid #d0dae3;
-            appearance: none;
-            -webkit-appearance: none;
-            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23103745' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
-            background-repeat: no-repeat;
-            background-position: right 0.8rem center;
-            background-size: 16px;
-        }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        .main {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-            background: #f5f7fa;
-        }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
 
-        .map-panel {
-            flex: 3;
-            position: relative;
-            background: #eef2f4;
-            border-right: 1px solid #d8e0e7;
-        }
-        #map {
-            width: 100%;
-            height: 100%;
-            background: #e1e8ed;
-        }
+  /* ---------- Header ---------- */
+  header {
+    background: var(--white);
+    border-bottom: 1px solid var(--line);
+    padding: 18px 24px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  .header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .logo {
+    font-weight: 800;
+    font-size: 20px;
+    color: var(--brand);
+    letter-spacing: -0.02em;
+  }
+  .logo span { color: var(--accent); }
+  .header-cta {
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .header-cta strong { color: var(--ink); }
 
-        .custom-zoom-controls {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            z-index: 1000;
-        }
-        .zoom-btn {
-            width: 44px;
-            height: 44px;
-            background: rgba(255, 255, 255, 0.85);
-            border: 1px solid #0b2b3a;
-            border-radius: 40px;
-            box-shadow: 0 4px 12px rgba(0,20,30,0.08);
-            font-size: 1.8rem;
-            font-weight: 340;
-            color: #0b2b3a;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.1s ease;
-            backdrop-filter: blur(4px);
-            line-height: 1;
-        }
-        .zoom-btn:hover {
-            background: #ffffff;
-            border-color: #0b2b3a;
-            box-shadow: 0 6px 14px rgba(21, 70, 90, 0.12);
-            color: #0b2b3a;
-        }
+  /* ---------- Hero ---------- */
+  .hero {
+    background: linear-gradient(135deg, #0f766e 0%, #115e59 100%);
+    color: var(--white);
+    padding: 56px 24px 72px;
+    text-align: center;
+  }
+  .hero h1 {
+    font-size: clamp(28px, 5vw, 44px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 14px;
+    line-height: 1.15;
+  }
+  .hero p {
+    font-size: clamp(16px, 2.2vw, 19px);
+    opacity: 0.92;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  .hero .badges {
+    display: flex;
+    gap: 22px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 26px;
+    font-size: 14px;
+    opacity: 0.95;
+  }
+  .hero .badges span::before {
+    content: "✓ ";
+    color: var(--accent);
+    font-weight: 700;
+  }
 
-        .layer-toggle {
-            position: absolute;
-            top: 20px;
-            left: 24px;
-            background: #ffffff;
-            border: 1px solid #0b2b3a;
-            border-radius: 40px;
-            padding: 0.3rem;
-            display: flex;
-            gap: 4px;
-            z-index: 1000;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
-        }
-        .layer-btn {
-            background: transparent;
-            border: none;
-            border-radius: 30px;
-            padding: 0.45rem 1.2rem;
-            font-size: 0.85rem;
-            font-weight: 520;
-            color: #0b2b3a;
-            cursor: pointer;
-            transition: 0.1s;
-            white-space: nowrap;
-            font-family: 'Inter', -apple-system, system-ui, sans-serif;
-        }
-        .layer-btn.active {
-            background: white;
-            border: 1px solid #0b2b3a;
-            box-shadow: 0 2px 6px rgba(95, 135, 155, 0.1);
-            color: #04303e;
-            font-weight: 560;
-        }
+  /* ---------- Main card ---------- */
+  .container {
+    max-width: 1100px;
+    margin: -40px auto 60px;
+    padding: 0 24px;
+  }
+  .card {
+    background: var(--white);
+    border-radius: 16px;
+    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.12);
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  @media (max-width: 860px) {
+    .card { grid-template-columns: 1fr; }
+  }
 
-        .map-coords {
-            position: absolute;
-            bottom: 24px;
-            left: 24px;
-            z-index: 1000;
-            font-family: 'Inter', -apple-system, system-ui, sans-serif;
-            font-size: 0.85rem;
-            font-weight: 520;
-            color: #0b2b3a;
-            letter-spacing: -0.01em;
-            pointer-events: none;
-        }
+  .card-panel {
+    padding: 36px 32px;
+  }
+  .card-panel.calc {
+    border-right: 1px solid var(--line);
+  }
+  @media (max-width: 860px) {
+    .card-panel.calc { border-right: none; border-bottom: 1px solid var(--line); }
+  }
 
-        .times-panel {
-            flex: 1.1;
-            background: #ffffff;
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-            padding: 2rem 1.8rem;
-            border-left: 1px solid #ecf0f4;
-            min-width: 280px;
-        }
+  .panel-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--brand);
+    margin-bottom: 22px;
+  }
 
-        .place-row {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 2.2rem;
-            background: #f8fafc;
-            padding: 0.2rem 0.2rem 0.2rem 1.5rem;
-            border-radius: 48px;
-            border: 1px solid #e3eaf0;
-        }
-        .place-row input {
-            flex: 1;
-            border: none;
-            background: none;
-            font-size: 0.95rem;
-            padding: 0.7rem 0;
-            outline: none;
-            color: #1e3f4e;
-            font-weight: 430;
-        }
-        .place-row button {
-            background: #eef4f8;
-            border: 1px solid #d1dee8;
-            border-radius: 40px;
-            padding: 0.6rem 1.6rem;
-            font-size: 0.9rem;
-            font-weight: 560;
-            color: #135467;
-            cursor: pointer;
-        }
+  /* ---------- Form fields ---------- */
+  .field { margin-bottom: 20px; }
+  .field label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 7px;
+    color: var(--ink);
+  }
+  .field .hint {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 400;
+    margin-left: 6px;
+  }
+  .input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .input-wrap .prefix,
+  .input-wrap .suffix {
+    position: absolute;
+    color: var(--muted);
+    font-size: 15px;
+    font-weight: 600;
+    pointer-events: none;
+  }
+  .input-wrap .prefix { left: 14px; }
+  .input-wrap .suffix { right: 14px; }
 
-        .prayer-list {
-            margin-top: 0;
-            border-top: 1px solid #ecf2f7;
-            padding-top: 1rem;
-        }
-        .prayer-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.9rem 0.2rem;
-            border-bottom: 1px solid #f0f5fa;
-            font-size: 1.3rem;
-        }
-        .prayer-item .name {
-            font-weight: 460;
-            color: #2f5b6f;
-            font-size: 1.1rem;
-        }
-        .prayer-item .time {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 1.2rem;
-            font-weight: 540;
-            color: #0b4356;
-            background: #f2f9ff;
-            padding: 0.25rem 1.1rem;
-            border-radius: 40px;
-            border: 1px solid #d8e8f0;
-        }
+  input[type="number"],
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--line);
+    border-radius: 10px;
+    font-size: 15px;
+    font-family: inherit;
+    color: var(--ink);
+    background: var(--white);
+    transition: border-color 0.15s, box-shadow 0.15s;
+    outline: none;
+  }
+  input.has-prefix { padding-left: 30px; }
+  input.has-suffix { padding-right: 34px; }
 
-        .footnote {
-            margin-top: 2rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.6rem;
-            border-top: 1px solid #ecf2f7;
-            padding-top: 1.5rem;
-        }
-        .hijri-row, .greg-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            padding: 0.5rem 0.2rem;
-            border-bottom: 1px solid #f0f5fa;
-        }
-        .hijri-row span:first-child, .greg-row span:first-child {
-            font-weight: 460;
-            color: #2f5b6f;
-            font-size: 1.1rem;
-        }
-        .hijri-row span:last-child, .greg-row span:last-child {
-            font-family: 'Inter', sans-serif;
-            font-size: 1.1rem;
-            font-weight: 460;
-            color: #2f5b6f;
-        }
-        .error-note {
-            color: #c1593a;
-            font-size: 0.75rem;
-            min-height: 1.2rem;
-            margin-top: 0.3rem;
-        }
-        .hint-row {
-            margin-top: 0.8rem;
-            font-size: 0.7rem;
-            color: #8d988b;
-            font-weight: 390;
-            text-align: left;
-        }
-    </style>
+  input:focus, select:focus {
+    border-color: var(--brand);
+    box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+  }
+
+  /* ---------- Slider ---------- */
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  input[type="range"] {
+    flex: 1;
+    accent-color: var(--brand);
+    height: 6px;
+  }
+  .slider-value {
+    min-width: 78px;
+    text-align: right;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--brand);
+  }
+
+  /* ---------- Results ---------- */
+  .results {
+    background: #f0fdfa;
+    border: 1px solid #99f6e4;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 22px;
+  }
+  .results.empty {
+    background: #f8fafc;
+    border-color: var(--line);
+    color: var(--muted);
+    text-align: center;
+    font-size: 14px;
+    padding: 34px 20px;
+  }
+  .result-main {
+    text-align: center;
+    padding-bottom: 16px;
+    border-bottom: 1px dashed #99f6e4;
+    margin-bottom: 16px;
+  }
+  .result-main .label {
+    font-size: 13px;
+    color: var(--brand-dark);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .result-main .value {
+    font-size: 40px;
+    font-weight: 800;
+    color: var(--brand-dark);
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-top: 4px;
+  }
+  .result-main .sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  .result-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .result-grid .item .label {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  .result-grid .item .value {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .savings-positive { color: var(--success) !important; }
+
+  /* ---------- Lead form ---------- */
+  .lead-form .panel-title { color: var(--accent); }
+
+  .btn {
+    width: 100%;
+    padding: 15px 20px;
+    border: none;
+    border-radius: 10px;
+    background: var(--accent);
+    color: #1c1917;
+    font-size: 16px;
+    font-weight: 800;
+    font-family: inherit;
+    cursor: pointer;
+    letter-spacing: -0.01em;
+    transition: background 0.15s, transform 0.05s;
+  }
+  .btn:hover { background: #d97706; }
+  .btn:active { transform: translateY(1px); }
+  .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  .consent {
+    display: flex;
+    gap: 9px;
+    align-items: flex-start;
+    margin: 16px 0 14px;
+  }
+  .consent input[type="checkbox"] {
+    margin-top: 3px;
+    width: 16px;
+    height: 16px;
+    accent-color: var(--brand);
+    flex-shrink: 0;
+  }
+  .consent label {
+    font-size: 11.5px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .consent a { color: var(--brand); text-decoration: underline; }
+
+  .trust-row {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-top: 16px;
+    font-size: 11.5px;
+    color: var(--muted);
+    flex-wrap: wrap;
+  }
+  .trust-row span::before {
+    content: "🔒 ";
+  }
+
+  /* ---------- Success state ---------- */
+  .success-box {
+    display: none;
+    text-align: center;
+    padding: 20px 0;
+  }
+  .success-box.show { display: block; }
+  .success-box .check {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #dcfce7;
+    color: var(--success);
+    font-size: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+  }
+  .success-box h3 {
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
+  .success-box p {
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  /* ---------- Trust / SEO section ---------- */
+  .info-section {
+    max-width: 1100px;
+    margin: 0 auto 60px;
+    padding: 0 24px;
+  }
+  .info-section h2 {
+    font-size: 24px;
+    margin-bottom: 18px;
+    letter-spacing: -0.01em;
+  }
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  @media (max-width: 800px) {
+    .info-grid { grid-template-columns: 1fr; }
+  }
+  .info-card {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 22px;
+  }
+  .info-card h3 {
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+  .info-card p {
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  /* ---------- Footer ---------- */
+  footer {
+    background: var(--ink);
+    color: #94a3b8;
+    padding: 36px 24px;
+    font-size: 12.5px;
+    line-height: 1.7;
+  }
+  .footer-inner { max-width: 1100px; margin: 0 auto; }
+  footer a { color: #cbd5e1; text-decoration: none; margin-right: 16px; }
+  footer a:hover { color: var(--white); }
+  .disclaimer {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid #1e293b;
+    font-size: 11.5px;
+    color: #64748b;
+  }
+
+  .error-msg {
+    color: #dc2626;
+    font-size: 12.5px;
+    margin-top: 6px;
+    display: none;
+  }
+  .error-msg.show { display: block; }
+  input.invalid { border-color: #dc2626; }
+</style>
 </head>
 <body>
-    <div class="top">
-        <h2><span></span>Salah Tracker</h2>
-        <div class="method-wrap">
-            <span>Method</span>
-            <select id="methodSelect">
-                <!--
-                  ╔══════════════════════════════════════════════════════════╗
-                  ║  FIX 1 — Added "Kemenag (Indonesia)" as first/default   ║
-                  ║  option. This uses Fajr=20°, Isha=18° which matches     ║
-                  ║  the Indonesian Ministry of Religious Affairs standard   ║
-                  ║  (source used by Google for Indonesian prayer times).    ║
-                  ║                                                          ║
-                  ║  Old default was MWL (Fajr=18°, Isha=17°) which caused: ║
-                  ║    • Fajr  +8 min too late  (18° vs 20° angle)          ║
-                  ║    • Isha  -4 min too early  (17° vs 18° angle)         ║
-                  ╚══════════════════════════════════════════════════════════╝
-                -->
-                <option value="Kemenag" selected>Kemenag (Indonesia)</option>
-                <option value="MWL">MWL</option>
-                <option value="Jafari">Jafari</option>
-                <option value="Karachi">Karachi</option>
-                <option value="ISNA">ISNA</option>
-                <option value="Makkah">Makkah</option>
-                <option value="Egypt">Egypt</option>
-                <option value="Tehran">Tehran</option>
-                <option value="DIYANET">Diyanet (Turkey)</option>
-                <option value="GULF">Gulf / Dubai</option>
-                <option value="Singapore">Singapore / MUIS</option>
+
+<!-- ================= HEADER ================= -->
+<header>
+  <div class="header-inner">
+    <div class="logo">Refi<span>Smart</span></div>
+    <div class="header-cta">Free calculator · <strong>No credit check</strong></div>
+  </div>
+</header>
+
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <h1>See How Much You Could Save by Refinancing</h1>
+  <p>Enter a few details below to instantly estimate your new monthly payment and lifetime savings. Takes less than 30 seconds.</p>
+  <div class="badges">
+    <span>100% Free</span>
+    <span>No Obligation</span>
+    <span>No Credit Impact</span>
+  </div>
+</section>
+
+<!-- ================= MAIN CARD ================= -->
+<div class="container">
+  <div class="card">
+
+    <!-- LEFT: CALCULATOR -->
+    <div class="card-panel calc">
+      <div class="panel-title">1. Your Current Loan</div>
+
+      <div class="field">
+        <label for="balance">Remaining Loan Balance</label>
+        <div class="input-wrap">
+          <span class="prefix">$</span>
+          <input type="number" id="balance" class="has-prefix" placeholder="250,000" min="1000" step="1000" value="250000" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="rate">Current Interest Rate <span class="hint">%</span></label>
+        <div class="input-wrap">
+          <input type="number" id="rate" class="has-suffix" placeholder="6.5" min="0.1" max="20" step="0.1" value="6.5" />
+          <span class="suffix">%</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="term">Remaining Term</label>
+        <select id="term">
+          <option value="30">30 years</option>
+          <option value="25">25 years</option>
+          <option value="20">20 years</option>
+          <option value="15" selected>15 years</option>
+          <option value="10">10 years</option>
+        </select>
+      </div>
+
+      <div class="panel-title" style="margin-top:28px;">2. Your New Loan Offer</div>
+
+      <div class="field">
+        <label for="newRate">New Interest Rate <span class="hint">%</span></label>
+        <div class="input-wrap">
+          <input type="number" id="newRate" class="has-suffix" placeholder="5.5" min="0.1" max="20" step="0.1" value="5.5" />
+          <span class="suffix">%</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="newTerm">New Term</label>
+        <select id="newTerm">
+          <option value="30" selected>30 years</option>
+          <option value="25">25 years</option>
+          <option value="20">20 years</option>
+          <option value="15">15 years</option>
+          <option value="10">10 years</option>
+        </select>
+      </div>
+
+      <button class="btn" id="calcBtn" type="button">Calculate My Savings</button>
+
+      <!-- RESULTS -->
+      <div id="results" class="results empty" style="margin-top:22px;">
+        Enter your loan details and tap “Calculate My Savings.”
+      </div>
+    </div>
+
+    <!-- RIGHT: LEAD FORM -->
+    <div class="card-panel lead-form">
+      <div class="panel-title">3. Get Your Personalized Offers</div>
+
+      <div id="formWrap">
+        <p style="font-size:14px;color:var(--muted);margin-bottom:20px;">
+          Want to see real refinance offers from vetted lenders? Fill this out and we'll match you with up to 3 personalized quotes.
+        </p>
+
+        <form id="leadForm" novalidate>
+          <div class="field">
+            <label for="fname">Full Name</label>
+            <input type="text" id="fname" name="fname" placeholder="Jane Doe" autocomplete="name" required />
+            <div class="error-msg" data-for="fname">Please enter your name.</div>
+          </div>
+
+          <div class="field">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" placeholder="jane@example.com" autocomplete="email" required />
+            <div class="error-msg" data-for="email">Please enter a valid email.</div>
+          </div>
+
+          <div class="field">
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" name="phone" placeholder="(555) 123-4567" autocomplete="tel" required />
+            <div class="error-msg" data-for="phone">Please enter a valid 10-digit phone number.</div>
+          </div>
+
+          <div class="field">
+            <label for="zip">ZIP Code</label>
+            <input type="text" id="zip" name="zip" placeholder="90210" inputmode="numeric" maxlength="5" autocomplete="postal-code" required />
+            <div class="error-msg" data-for="zip">Please enter a valid 5-digit ZIP.</div>
+          </div>
+
+          <div class="field">
+            <label for="credit">Estimated Credit Score</label>
+            <select id="credit" name="credit" required>
+              <option value="">Select range</option>
+              <option value="760+">Excellent (760+)</option>
+              <option value="700-759">Good (700–759)</option>
+              <option value="640-699">Fair (640–699)</option>
+              <option value="580-639">Poor (580–639)</option>
+              <option value="below-580">Below 580</option>
             </select>
-        </div>
+            <div class="error-msg" data-for="credit">Please select a range.</div>
+          </div>
+
+          <!-- TCPA COMPLIANT CONSENT -->
+          <div class="consent">
+            <input type="checkbox" id="consent" name="consent" required />
+            <label for="consent">
+              By checking this box and submitting, I provide my electronic signature and express written consent for RefiSmart and its <a href="#partners">marketing partners</a> to contact me at the phone number and email provided — including via autodialed calls, texts, and prerecorded messages — about refinance and lending offers. Consent is not a condition of any purchase. Message and data rates may apply. I may opt out at any time by replying STOP or <a href="#contact">contacting us</a>. See <a href="#privacy">Privacy Policy</a> and <a href="#terms">Terms</a>.
+            </label>
+          </div>
+          <div class="error-msg" data-for="consent" style="margin-bottom:10px;">You must agree to the consent terms to continue.</div>
+
+          <button type="submit" class="btn" id="submitBtn">Get My Free Quotes →</button>
+
+          <div class="trust-row">
+            <span>SSL Secured</span>
+            <span>No Credit Check</span>
+            <span>Unsubscribe Anytime</span>
+          </div>
+        </form>
+      </div>
+
+      <!-- SUCCESS STATE -->
+      <div id="successBox" class="success-box">
+        <div class="check">✓</div>
+        <h3>You're all set!</h3>
+        <p>We're matching you with up to 3 vetted lenders. Check your email and phone within the next 15 minutes for personalized offers.</p>
+      </div>
     </div>
 
-    <div class="main">
-        <div class="map-panel">
-            <div id="map"></div>
-            <div class="layer-toggle" id="layerToggle">
-                <button class="layer-btn active" id="streetBtn">Street</button>
-                <button class="layer-btn" id="satelliteBtn">Satellite</button>
-            </div>
-            <div class="custom-zoom-controls">
-                <button class="zoom-btn" id="zoomInBtn">+</button>
-                <button class="zoom-btn" id="zoomOutBtn">−</button>
-            </div>
-            <div class="map-coords" id="mapLatLng">--°N --°E</div>
-        </div>
+  </div>
+</div>
 
-        <div class="times-panel">
-            <div class="place-row">
-                <input type="text" id="cityInput" placeholder="City or place" value="Mecca">
-                <button id="searchBtn">Go</button>
-            </div>
-
-            <div class="prayer-list">
-                <div class="prayer-item"><span class="name">Fajr</span><span class="time" id="fajr">--:--</span></div>
-                <div class="prayer-item"><span class="name">Sunrise</span><span class="time" id="sunrise">--:--</span></div>
-                <div class="prayer-item"><span class="name">Dhuhr</span><span class="time" id="dhuhr">--:--</span></div>
-                <div class="prayer-item"><span class="name">Asr</span><span class="time" id="asr">--:--</span></div>
-                <div class="prayer-item"><span class="name">Maghrib</span><span class="time" id="maghrib">--:--</span></div>
-                <div class="prayer-item"><span class="name">Isha</span><span class="time" id="isha">--:--</span></div>
-            </div>
-
-            <div class="footnote">
-                <div class="hijri-row">
-                    <span id="hijriDate">—</span>
-                    <span id="hijriLabel">Hijri</span>
-                </div>
-                <div class="greg-row">
-                    <span id="currentDate"></span>
-                    <span id="tzOffset"></span>
-                </div>
-            </div>
-            <div id="errorMsg" class="error-note"></div>
-            <div class="hint-row">made by Raul Saavedra</div>
-        </div>
+<!-- ================= INFO / TRUST SECTION ================= -->
+<section class="info-section">
+  <h2>Why Homeowners Refinance</h2>
+  <div class="info-grid">
+    <div class="info-card">
+      <h3>Lower Your Rate</h3>
+      <p>Even a 1% rate drop on a $300k loan can save you over $50,000 in interest over the life of the loan.</p>
     </div>
+    <div class="info-card">
+      <h3>Reduce Monthly Payment</h3>
+      <p>Extending your term or lowering your rate can free up hundreds of dollars in monthly cash flow.</p>
+    </div>
+    <div class="info-card">
+      <h3>Access Home Equity</h3>
+      <p>A cash-out refinance lets you tap into your home's equity for renovations, debt payoff, or investments.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <div class="footer-inner">
+    <div style="margin-bottom:14px;">
+      <a href="#privacy">Privacy Policy</a>
+      <a href="#terms">Terms of Use</a>
+      <a href="#contact">Contact</a>
+      <a href="#partners">Marketing Partners</a>
+    </div>
+    <div class="disclaimer">
+      RefiSmart is not a lender, mortgage broker, or financial advisor. We do not make loans, offer credit, or make credit decisions. We connect consumers with third-party lenders and marketing partners who may contact you with offers. Information provided is for illustrative purposes only and does not constitute a loan offer or guarantee of approval. Rates, terms, and availability vary by lender and state. Refinancing may increase the total interest paid over the life of your loan. Consult a licensed financial professional before making borrowing decisions.
+      <br /><br />
+      © <span id="year"></span> RefiSmart. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+<script>
+/* =========================================================
+   1. CALCULATOR LOGIC
+   ========================================================= */
+function amortizedPayment(principal, annualRate, years) {
+  const r = (annualRate / 100) / 12;
+  const n = years * 12;
+  if (r === 0) return principal / n;
+  return principal * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+}
+
+function fmtMoney(n) {
+  return '$' + Math.round(n).toLocaleString('en-US');
+}
+
+const calcBtn = document.getElementById('calcBtn');
+const resultsEl = document.getElementById('results');
+
+calcBtn.addEventListener('click', () => {
+  const balance = parseFloat(document.getElementById('balance').value);
+  const rate = parseFloat(document.getElementById('rate').value);
+  const term = parseFloat(document.getElementById('term').value);
+  const newRate = parseFloat(document.getElementById('newRate').value);
+  const newTerm = parseFloat(document.getElementById('newTerm').value);
+
+  if (!balance || !rate || !term || !newRate || !newTerm) {
+    resultsEl.className = 'results empty';
+    resultsEl.textContent = 'Please fill in all fields above.';
+    return;
+  }
+
+  const currentPayment = amortizedPayment(balance, rate, term);
+  const newPayment = amortizedPayment(balance, newRate, newTerm);
+
+  // Remaining interest under current loan
+  const currentRemainingInterest = (currentPayment * term * 12) - balance;
+  const newTotalInterest = (newPayment * newTerm * 12) - balance;
+
+  const monthlySavings = currentPayment - newPayment;
+  const lifetimeSavings = currentRemainingInterest - newTotalInterest;
+
+  const savingsClass = monthlySavings > 0 ? 'savings-positive' : '';
+
+  resultsEl.className = 'results';
+  resultsEl.innerHTML = `
+    <div class="result-main">
+      <div class="label">New Monthly Payment</div>
+      <div class="value">${fmtMoney(newPayment)}</div>
+      <div class="sub">vs. ${fmtMoney(currentPayment)} today</div>
+    </div>
+    <div class="result-grid">
+      <div class="item">
+        <div class="label">Monthly Savings</div>
+        <div class="value ${savingsClass}">${monthlySavings > 0 ? fmtMoney(monthlySavings) : '—'}</div>
+      </div>
+      <div class="item">
+        <div class="label">Lifetime Interest Savings</div>
+        <div class="value ${savingsClass}">${lifetimeSavings > 0 ? fmtMoney(lifetimeSavings) : '—'}</div>
+      </div>
+      <div class="item">
+        <div class="label">Current Total Interest Left</div>
+        <div class="value">${fmtMoney(currentRemainingInterest)}</div>
+      </div>
+      <div class="item">
+        <div class="label">New Total Interest</div>
+        <div class="value">${fmtMoney(newTotalInterest)}</div>
+      </div>
+    </div>
+  `;
+
+  // Smooth scroll to the lead form on mobile
+  if (window.innerWidth < 860) {
+    document.querySelector('.lead-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+});
+
+/* =========================================================
+   2. LEAD FORM VALIDATION + SUBMISSION
+   ========================================================= */
+const leadForm = document.getElementById('leadForm');
+const submitBtn = document.getElementById('submitBtn');
+const successBox = document.getElementById('successBox');
+const formWrap = document.getElementById('formWrap');
+
+function showError(fieldId, show) {
+  const input = document.getElementById(fieldId);
+  const err = document.querySelector(`.error-msg[data-for="${fieldId}"]`);
+  if (input) input.classList.toggle('invalid', show);
+  if (err) err.classList.toggle('show', show);
+}
+
+function validate() {
+  let ok = true;
+
+  const fname = document.getElementById('fname').value.trim();
+  showError('fname', fname.length < 2);
+  if (fname.length < 2) ok = false;
+
+  const email = document.getElementById('email').value.trim();
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  showError('email', !emailOk);
+  if (!emailOk) ok = false;
+
+  const phone = document.getElementById('phone').value.replace(/\D/g, '');
+  const phoneOk = phone.length === 10;
+  showError('phone', !phoneOk);
+  if (!phoneOk) ok = false;
+
+  const zip = document.getElementById('zip').value.trim();
+  const zipOk = /^\d{5}$/.test(zip);
+  showError('zip', !zipOk);
+  if (!zipOk) ok = false;
+
+  const credit = document.getElementById('credit').value;
+  showError('credit', !credit);
+  if (!credit) ok = false;
+
+  const consent = document.getElementById('consent').checked;
+  showError('consent', !consent);
+  if (!consent) ok = false;
+
+  return ok;
+}
+
+// Clear errors as the user types
+['fname','email','phone','zip','credit'].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener('input', () => showError(id, false));
+  el.addEventListener('change', () => showError(id, false));
+});
+document.getElementById('consent').addEventListener('change', () => showError('consent', false));
+
+leadForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  if (!validate()) return;
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Submitting…';
+
+  // Gather all data (calculator + form)
+  const payload = {
+    // Lead info
+    name: document.getElementById('fname').value.trim(),
+    email: document.getElementById('email').value.trim(),
+    phone: document.getElementById('phone').value.replace(/\D/g, ''),
+    zip: document.getElementById('zip').value.trim(),
+    credit: document.getElementById('credit').value,
+    consent: true,
+    consentTimestamp: new Date().toISOString(),
+    // Loan info
+    balance: document.getElementById('balance').value,
+    currentRate: document.getElementById('rate').value,
+    currentTerm: document.getElementById('term').value,
+    newRate: document.getElementById('newRate').value,
+    newTerm: document.getElementById('newTerm').value,
+    // Meta
+    source: window.location.href,
+    userAgent: navigator.userAgent
+  };
+
+  /* =========================================================
+     >>> SEND THE LEAD <<<
+     Replace the block below with your real endpoint.
+     Options:
+       - Your own backend (POST /api/lead)
+       - A lead marketplace API (QuinStreet, Modernize, etc.)
+       - A form service (Formspree, Web3Forms, Basin, Getform)
+       - A CRM webhook (HubSpot, Zapier, Make)
+     ========================================================= */
+
+  try {
+    // EXAMPLE using Formspree — replace YOUR_FORM_ID
+    // const res = await fetch('https://formspree.io/f/YOUR_FORM_ID', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    //   body: JSON.stringify(payload)
+    // });
+    // if (!res.ok) throw new Error('Submission failed');
+
+    // Demo mode: log to console + simulate success
+    console.log('LEAD SUBMITTED:', payload);
+    await new Promise(r => setTimeout(r, 900));
+
+    formWrap.style.display = 'none';
+    successBox.classList.add('show');
+
+  } catch (err) {
+    console.error(err);
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Get My Free Quotes →';
+    alert('Something went wrong. Please try again.');
+  }
+});
+
+/* =========================================================
+   3. MISC
+   ========================================================= */
+document.getElementById('year').textContent = new Date().getFullYear();
+
+// Optional phone formatting
+document.getElementById('phone').addEventListener('input', (e) => {
+  let v = e.target.value.replace(/\D/g, '').slice(0, 10);
+  if (v.length >= 6) v = `(${v.slice(0,3)}) ${v.slice(3,6)}-${v.slice(6)}`;
+  else if (v.length >= 3) v = `(${v.slice(0,3)}) ${v.slice(3)}`;
+  e.target.value = v;
+});
+</script>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/adhan@4.4.3/lib/bundles/adhan.umd.min.js"></script>
-
-    <script>
-    (function() {
-
-        // ─────────────────────────────────────────────────────────────────────
-        // al-iṭār al-fiḍḍī — teardrop silver frame builder
-        // ─────────────────────────────────────────────────────────────────────
-        function makeTearDropFrame(opts) {
-            opts = opts || {};
-            var W     = opts.w     !== undefined ? opts.w     : 0.215;
-            var H     = opts.h     !== undefined ? opts.h     : 0.270;
-            var CONV  = opts.conv  !== undefined ? opts.conv  : 0.048;
-            var HOLR  = opts.holr  !== undefined ? opts.holr  : 0.050;
-            var THICK = opts.thick !== undefined ? opts.thick : 0.016;
-
-            var mSilver = opts.mSilver;
-            var mGold   = opts.mGold;
-            var mDark   = opts.mDark;
-
-            var grp = new THREE.Group();
-
-            function taper(t) {
-                return Math.pow(Math.abs(Math.sin(t * 0.5)), 0.45);
-            }
-
-            var faceGeo = new THREE.CircleGeometry(1.0, 96);
-            var posArr  = faceGeo.attributes.position;
-            for (var vi = 0; vi < posArr.count; vi++) {
-                var vx = posArr.getX(vi);
-                var vy = posArr.getY(vi);
-                var r  = Math.sqrt(vx * vx + vy * vy);
-                if (r < 0.001) {
-                    posArr.setXYZ(vi, 0, 0, CONV);
-                    continue;
-                }
-                var ang    = Math.atan2(vx / W, -vy / H);
-                var tap    = taper(ang);
-                var boundX = W * Math.sin(ang) * tap;
-                var boundY = -H * Math.cos(ang);
-                var convZ  = CONV * Math.exp(-r * r * 2.8);
-                posArr.setXYZ(vi, boundX * r, boundY * r, convZ);
-            }
-            faceGeo.computeVertexNormals();
-            grp.add(new THREE.Mesh(faceGeo, mSilver));
-
-            var backShape = new THREE.Shape();
-            for (var bi = 0; bi <= 96; bi++) {
-                var bt  = (bi / 96) * Math.PI * 2;
-                var bx  = W * Math.sin(bt) * taper(bt);
-                var by  = -H * Math.cos(bt);
-                if (bi === 0) backShape.moveTo(bx, by); else backShape.lineTo(bx, by);
-            }
-            backShape.closePath();
-            var backMesh = new THREE.Mesh(new THREE.ShapeGeometry(backShape, 64), mSilver);
-            backMesh.position.z = -THICK;
-            grp.add(backMesh);
-
-            var borderPts = [];
-            for (var ri = 0; ri <= 120; ri++) {
-                var rt  = (ri / 120) * Math.PI * 2;
-                var tap2 = taper(rt);
-                borderPts.push(new THREE.Vector3(
-                    W * Math.sin(rt) * tap2 * 1.032,
-                   -H * Math.cos(rt) * 1.032,
-                    0.004
-                ));
-            }
-            borderPts.push(borderPts[0].clone());
-            var borderCurve = new THREE.CatmullRomCurve3(borderPts, true);
-            grp.add(new THREE.Mesh(
-                new THREE.TubeGeometry(borderCurve, 160, 0.011, 12, true),
-                mGold
-            ));
-
-            var holMesh = new THREE.Mesh(new THREE.CircleGeometry(HOLR, 48), mDark);
-            holMesh.position.set(0, H * 0.05, CONV * 0.78);
-            grp.add(holMesh);
-
-            var fragMat = new THREE.MeshStandardMaterial({
-                color: 0x100c0e, roughness: 0.30, metalness: 0.04,
-                emissive: 0x060304, emissiveIntensity: 0.18
-            });
-            var frags = [
-                [0,           0,            0.006, 0.033, 0.027, 0.010],
-                [ HOLR*0.22,  HOLR*0.15,    0.008, 0.021, 0.017, 0.008],
-                [-HOLR*0.20, -HOLR*0.18,    0.007, 0.019, 0.015, 0.008],
-                [ HOLR*0.12, -HOLR*0.26,    0.006, 0.015, 0.012, 0.007]
-            ];
-            frags.forEach(function(fd) {
-                var fg = new THREE.Mesh(new THREE.SphereGeometry(1, 20, 20), fragMat);
-                fg.position.set(fd[0], fd[1] + H * 0.05, CONV * 0.78 + fd[2]);
-                fg.scale.set(fd[3], fd[4], fd[5]);
-                grp.add(fg);
-            });
-
-            var innerPts = [];
-            for (var ii = 0; ii <= 120; ii++) {
-                var it  = (ii / 120) * Math.PI * 2;
-                var itp = taper(it);
-                innerPts.push(new THREE.Vector3(
-                    W * Math.sin(it) * itp * 0.97,
-                   -H * Math.cos(it) * 0.97,
-                    CONV * 0.05
-                ));
-            }
-            innerPts.push(innerPts[0].clone());
-            var innerCurve = new THREE.CatmullRomCurve3(innerPts, true);
-            var innerRimMat = new THREE.MeshStandardMaterial({
-                color: 0x1a1410, roughness: 0.85, metalness: 0.0,
-                transparent: true, opacity: 0.55
-            });
-            grp.add(new THREE.Mesh(
-                new THREE.TubeGeometry(innerCurve, 120, 0.008, 8, true),
-                innerRimMat
-            ));
-
-            return grp;
-        }
-
-        function generateRingIconCanvas() {
-            var RENDER_SIZE = 512;
-            var canvas = document.createElement('canvas');
-            canvas.width = canvas.height = RENDER_SIZE;
-
-            var scene  = new THREE.Scene();
-            var camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
-            camera.position.set(4.5, 2.7, 6.8);
-            camera.lookAt(0, 1.6, 0);
-
-            var renderer = new THREE.WebGLRenderer({
-                canvas: canvas, alpha: true, antialias: true,
-                powerPreference: 'high-performance'
-            });
-            renderer.setSize(RENDER_SIZE, RENDER_SIZE);
-            renderer.setPixelRatio(1);
-            renderer.setClearColor(0x000000, 0);
-            renderer.shadowMap.enabled = true;
-
-            scene.add(new THREE.AmbientLight(0xffffff, 0.08));
-            var l1 = new THREE.DirectionalLight(0xffeebb, 0.40);
-            l1.position.set(-1, 3, 10); scene.add(l1);
-            var l2 = new THREE.DirectionalLight(0xd0e8ff, 1.20);
-            l2.position.set(3, 2, 8); scene.add(l2);
-            var l3 = new THREE.DirectionalLight(0xffeedd, 0.18);
-            l3.position.set(-4, 3, -8); scene.add(l3);
-            var l4 = new THREE.DirectionalLight(0xffe8cc, 0.55);
-            l4.position.set(-6, 2, 5); scene.add(l4);
-
-            var SC = 3.0 / 13.1;
-            var KW = 11.03 * SC;
-            var KD = 12.86 * SC;
-            var KH = 13.1  * SC;
-            var ROT_Y  = Math.PI / 4;
-            var PLINTH = 0.25;
-            var HY = KH * 0.648;
-            var HH = KH * 0.040;
-
-            var mKis = new THREE.MeshStandardMaterial({ color:0x050508, roughness:0.75, metalness:0.05 });
-            var mGld = new THREE.MeshStandardMaterial({ color:0xd4960c, emissive:0x5a3800, roughness:0.22, metalness:0.92, emissiveIntensity:0.20 });
-            var mGlT = new THREE.MeshStandardMaterial({ color:0xd4a830, emissive:0x2e1c00, roughness:0.20, metalness:0.90, emissiveIntensity:0.20 });
-            var mMrb = new THREE.MeshStandardMaterial({ color:0xd8cfc4, roughness:0.40, metalness:0.05 });
-            var mWod = new THREE.MeshStandardMaterial({ color:0x6b4a1e, roughness:0.45, metalness:0.15 });
-            var mSmM = new THREE.MeshStandardMaterial({ color:0x191408, roughness:0.90, metalness:0.00 });
-            var mDrk = new THREE.MeshStandardMaterial({ color:0x030205, roughness:0.95, metalness:0.00 });
-
-            var mSil = new THREE.MeshStandardMaterial({
-                color:     0x888078,
-                emissive:  0x050404,
-                roughness: 0.52,
-                metalness: 0.62,
-                emissiveIntensity: 0.03,
-                side: THREE.DoubleSide
-            });
-            var mBorder = new THREE.MeshStandardMaterial({
-                color: 0xb08820, emissive: 0x3a2200,
-                roughness: 0.30, metalness: 0.82, emissiveIntensity: 0.18
-            });
-
-            function box(w, h, d, m) { return new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); }
-            function put(mesh, x, y, z, ry) {
-                mesh.position.set(x || 0, y || 0, z || 0);
-                if (ry !== undefined) mesh.rotation.y = ry;
-                scene.add(mesh);
-            }
-
-            put(box(KW+0.18, PLINTH, KD+0.18, mMrb), 0, PLINTH/2, 0, ROT_Y);
-
-            var bGeo = new THREE.BoxGeometry(KW, KH, KD);
-            put(new THREE.Mesh(bGeo, mKis), 0, KH/2+PLINTH, 0, ROT_Y);
-
-            var edges = new THREE.LineSegments(
-                new THREE.EdgesGeometry(bGeo),
-                new THREE.LineBasicMaterial({ color: 0x1a1a22 })
-            );
-            edges.position.y = KH/2+PLINTH;
-            edges.rotation.y = ROT_Y;
-            scene.add(edges);
-
-            [
-                [-KW*0.18, KH/2+PLINTH,  KD/2+0.005],
-                [ KW*0.18, KH/2+PLINTH,  KD/2+0.005],
-                [-KD/2-0.005, KH/2+PLINTH, -KW*0.18],
-                [-KD/2-0.005, KH/2+PLINTH,  KW*0.18]
-            ].forEach(function(pos) {
-                var sm = box(0.015, KH*0.92, 0.015, mSmM);
-                sm.position.set(pos[0], pos[1], pos[2]);
-                sm.rotation.y = ROT_Y;
-                scene.add(sm);
-            });
-
-            put(box(KW+0.06, HH, KD+0.06, mGld), 0, HY+HH/2+PLINTH, 0, ROT_Y);
-            put(box(KW+0.04, 0.07, KD+0.04, mGlT), 0, HY+HH/2+PLINTH+(HH/2+0.07/2+0.01), 0, ROT_Y);
-            put(box(KW+0.04, 0.07, KD+0.04, mGlT), 0, HY+HH/2+PLINTH-(HH/2+0.07/2+0.01), 0, ROT_Y);
-
-            var DW = 1.93*SC, DH = 3.10*SC, DE = 2.25*SC+PLINTH;
-            var dg = new THREE.Group();
-            dg.rotation.y = ROT_Y;
-            scene.add(dg);
-
-            var dfr = box(DW+0.10, DH+0.10, 0.04, mGld);
-            dfr.position.set(0, DE+DH/2, KD/2+0.04);
-            dg.add(dfr);
-
-            var dpan = box(DW, DH, 0.06, mWod);
-            dpan.position.set(0, DE+DH/2, KD/2+0.06);
-            dg.add(dpan);
-
-            var dp1 = box(DW*0.35, DH*0.85, 0.02, mGlT);
-            dp1.position.set(-DW*0.22, DE+DH/2, KD/2+0.10);
-            dg.add(dp1);
-            var dp2 = box(DW*0.35, DH*0.85, 0.02, mGlT);
-            dp2.position.set( DW*0.22, DE+DH/2, KD/2+0.10);
-            dg.add(dp2);
-
-            var sill = box(DW+0.12, 0.06, 0.14, mGld);
-            sill.position.set(0, DE+0.03, KD/2+0.04);
-            dg.add(sill);
-
-            var mg = new THREE.Group();
-            mg.rotation.y = ROT_Y;
-            scene.add(mg);
-            var miz = box(0.18, 0.10, 0.55, mGld);
-            miz.position.set(0, KH+PLINTH-0.05, -KD/2-0.20);
-            miz.rotation.x = 0.12;
-            mg.add(miz);
-
-            put(box(KW+0.04, 0.12, KD+0.04, mKis), 0, KH+PLINTH+0.06, 0, ROT_Y);
-            put(box(KW+0.10, 0.07, KD+0.10, mGlT), 0, KH+PLINTH+0.14, 0, ROT_Y);
-
-            var STONE_Y  = 1.5 * SC + PLINTH;
-            var OFFSET_X = -1.27;
-
-            var stoneGrp = new THREE.Group();
-            stoneGrp.rotation.y = ROT_Y;
-            scene.add(stoneGrp);
-
-            var faceGrp = new THREE.Group();
-            faceGrp.position.set(OFFSET_X, STONE_Y, KD / 2);
-            faceGrp.rotation.y = 0;
-            stoneGrp.add(faceGrp);
-
-            var tearFrame = makeTearDropFrame({
-                w:       0.215,
-                h:       0.270,
-                conv:    0.048,
-                holr:    0.050,
-                thick:   0.016,
-                mSilver: mSil,
-                mGold:   mBorder,
-                mDark:   mDrk
-            });
-            faceGrp.add(tearFrame);
-
-            renderer.render(scene, camera);
-            renderer.dispose();
-            return canvas;
-        }
-
-        // ─────────────────────────────────────────────────────────────────────
-        // Prayer times logic
-        // ─────────────────────────────────────────────────────────────────────
-        var lat = 21.4225, lng = 39.8262;
-        var locationTimezone = 'Asia/Riyadh';
-        var map, marker;
-        var streetLayer, satelliteLayer;
-
-        // ╔══════════════════════════════════════════════════════════════════╗
-        // ║  getCalcParams() — fully audited v3                            ║
-        // ║                                                                  ║
-        // ║  BUGS FIXED IN THIS VERSION:                                    ║
-        // ║                                                                  ║
-        // ║  BUG A — Jafari maghribAngle was 4° but Tehran() base is 4.5°. ║
-        // ║    The override to 4° is the correct Jafari standard (eastern  ║
-        // ║    redness angle), and IS correctly overriding the base 4.5°.  ║
-        // ║    However madhab=Shafi was applied globally AFTER the switch,  ║
-        // ║    overwriting any Shia-specific madhab. Jafari uses shadow    ║
-        // ║    factor 1 which equals Shafi — coincidentally OK — but now   ║
-        // ║    we skip global madhab override for Jafari/Tehran explicitly. ║
-        // ║                                                                  ║
-        // ║  BUG B — Tehran standalone: applying madhab=Shafi is wrong     ║
-        // ║    semantically (Tehran is Shia), even though numerically the   ║
-        // ║    Asr shadow factor is the same (1x). Now exempted.            ║
-        // ║                                                                  ║
-        // ║  BUG C — Jafari redundant ishaInterval=0 and wrong base:       ║
-        // ║    Tehran() already sets ishaInterval=0. Cleaned up.            ║
-        // ║    Using adhan.CalculationMethod.Other() as Jafari base avoids  ║
-        // ║    inheriting Tehran's wrong Fajr=17.7 before override.         ║
-        // ║                                                                  ║
-        // ║  BUG D — Dubai() has built-in +3min adjustments on sunrise,    ║
-        // ║    Dhuhr, Asr, Maghrib. These are UAE-IACAD official offsets.  ║
-        // ║    Correct to keep as-is (matches UAE official schedule).       ║
-        // ║                                                                  ║
-        // ║  BUG E — Singapore() in adhan returns Fajr=20°, Isha=18°       ║
-        // ║    which matches MUIS exactly. Using it directly is correct.    ║
-        // ║    Kemenag custom also uses 20°/18° — both are correct.         ║
-        // ║                                                                  ║
-        // ║  All method existence confirmed: Dubai(), Singapore(), Turkey(), ║
-        // ║  Tehran() are all present in adhan@4.4.3 (confirmed via         ║
-        // ║  unpkg TypeScript definition file).                              ║
-        // ╚══════════════════════════════════════════════════════════════════╝
-        function getCalcParams(name) {
-            var params;
-            var skipMadhabOverride = false; // Shia methods handle their own Asr
-
-            switch (name) {
-
-                // ── Indonesia — Kemenag Jakarta ──────────────────────────
-                // Indonesian Ministry of Religious Affairs standard.
-                // Fajr: 20°  Isha: 18°  (verified vs Google/bimasislam.kemenag.go.id)
-                // Using adhan.Other() as base to avoid inheriting any preset
-                // adjustments from another method.
-                case 'Kemenag': {
-                    params = adhan.CalculationMethod.Other();
-                    params.fajrAngle = 20;
-                    params.ishaAngle = 18;
-                    break;
-                }
-
-                // ── Singapore — MUIS (Majlis Ugama Islam Singapura) ──────
-                // adhan's built-in Singapore() method: Fajr=20°, Isha=18°.
-                // Same angles as Kemenag. Also used in Malaysia/Indonesia by MUIS.
-                case 'Singapore': {
-                    params = adhan.CalculationMethod.Singapore();
-                    break;
-                }
-
-                // ── Turkey — Diyanet İşleri Başkanlığı ──────────────────
-                // adhan's built-in Turkey() approximation.
-                // Note: adhan docs state this is an approximation of Diyanet,
-                // less accurate outside Turkey proper.
-                case 'DIYANET': {
-                    params = adhan.CalculationMethod.Turkey();
-                    break;
-                }
-
-                // ── Gulf / Dubai — UAE IACAD ─────────────────────────────
-                // adhan's built-in Dubai() method: Fajr=18.2°, Isha=18.2°,
-                // plus official +3 min offsets on sunrise/dhuhr/asr/maghrib
-                // as per UAE IACAD (Islamic Affairs & Charitable Activities Dept).
-                case 'GULF': {
-                    params = adhan.CalculationMethod.Dubai();
-                    break;
-                }
-
-                // ── Jafari — Shia Ithna-Ashari ──────────────────────────
-                // Correct angles per praytimes.org and Islamic academic sources:
-                //   Fajr:    16°  (morning twilight disappears)
-                //   Isha:    14°  (evening twilight disappears)
-                //   Maghrib: 4°   (eastern sky redness overhead — NOT Tehran's 4.5°)
-                //
-                // Using adhan.Other() as base (NOT Tehran()) to avoid inheriting
-                // Tehran's fajrAngle=17.7 and maghribAngle=4.5 before overriding.
-                // We set every angle explicitly for clarity and correctness.
-                //
-                // madhab override skipped: Jafari Asr = shadow factor 1 (same
-                // numerical result as Shafi), but semantically distinct.
-                case 'Jafari': {
-                    params = adhan.CalculationMethod.Other();
-                    params.fajrAngle    = 16;   // Shia Ithna-Ashari standard
-                    params.ishaAngle    = 14;   // Shia Ithna-Ashari standard
-                    params.maghribAngle = 4;    // Eastern redness overhead (not 4.5°)
-                    skipMadhabOverride  = true;
-                    break;
-                }
-
-                // ── Tehran — Institute of Geophysics, Univ. of Tehran ────
-                // adhan's built-in Tehran() method:
-                //   Fajr:    17.7°
-                //   Isha:    14°   (angle-based, not interval)
-                //   Maghrib: 4.5°  (sun below horizon angle for redness disappearance)
-                //
-                // This is also a Shia method. Maghrib angle handled internally
-                // by Tehran(). No overrides needed. madhab override skipped
-                // (Tehran Asr = shadow factor 1, same as Shafi numerically).
-                case 'Tehran': {
-                    params = adhan.CalculationMethod.Tehran();
-                    skipMadhabOverride = true;
-                    break;
-                }
-
-                case 'Karachi': params = adhan.CalculationMethod.Karachi();          break;
-                case 'ISNA':    params = adhan.CalculationMethod.NorthAmerica();      break;
-                case 'Makkah':  params = adhan.CalculationMethod.UmmAlQura();         break;
-                case 'Egypt':   params = adhan.CalculationMethod.Egyptian();          break;
-                case 'MWL':
-                default:        params = adhan.CalculationMethod.MuslimWorldLeague(); break;
-            }
-
-            // Apply Shafi madhab (shadow factor 1, earlier Asr) for all Sunni
-            // methods. Skipped for Jafari/Tehran which are Shia — they use the
-            // same shadow factor numerically but are semantically different.
-            if (!skipMadhabOverride) {
-                params.madhab = adhan.Madhab.Shafi;
-            }
-
-            return params;
-        }
-
-        async function fetchTimezone(la, lo) {
-            try {
-                const res = await fetch(
-                    `https://timeapi.io/api/timezone/coordinate?latitude=${la}&longitude=${lo}`,
-                    { signal: AbortSignal.timeout(5000) }
-                );
-                if (res.ok) {
-                    const d = await res.json();
-                    if (d?.timeZone) return d.timeZone;
-                }
-            } catch {}
-            const off = Math.max(-12, Math.min(14, Math.round(lo / 15)));
-            return `Etc/GMT${off <= 0 ? '+' : ''}${-off}`;
-        }
-
-        function formatInTz(dateObj, tz) {
-            if (!dateObj || isNaN(dateObj)) return '--:--';
-            try {
-                return dateObj.toLocaleTimeString('en-GB', {
-                    timeZone: tz, hour: '2-digit', minute: '2-digit', hour12: false
-                });
-            } catch { return '--:--'; }
-        }
-
-        function tzLabel(tz, date) {
-            try {
-                return new Intl.DateTimeFormat('en', {
-                    timeZone: tz, timeZoneName: 'shortOffset'
-                }).formatToParts(date).find(x => x.type === 'timeZoneName')?.value || '';
-            } catch {
-                const off = -date.getTimezoneOffset() / 60;
-                return `UTC${off >= 0 ? '+' : ''}${off}`;
-            }
-        }
-
-        function hijriDateStr(d) {
-            const day = d.getDate(), mo = d.getMonth() + 1, yr = d.getFullYear();
-            let jd = Math.floor((1461 * (yr + 4800 + Math.floor((mo - 14) / 12))) / 4)
-                   + Math.floor((367  * (mo - 2 - 12 * Math.floor((mo - 14) / 12))) / 12)
-                   - Math.floor((3    * Math.floor((yr + 4900 + Math.floor((mo - 14) / 12)) / 100)) / 4)
-                   + day - 32075;
-            let l = jd - 1948440 + 10632;
-            const n = Math.floor((l - 1) / 10631);
-            l = l - 10631 * n + 354;
-            const j = Math.floor((10985 - l) / 5316) * Math.floor((50 * l) / 17719)
-                    + Math.floor(l / 5670) * Math.floor((43 * l) / 15238);
-            l = l - Math.floor((30 - j) / 15) * Math.floor((17719 * j) / 50)
-                  - Math.floor(j / 16) * Math.floor((15238 * j) / 43) + 29;
-            const hm = Math.floor((24 * l) / 709);
-            const hd = l - Math.floor((709 * hm) / 24);
-            const hy = 30 * n + j - 30;
-            const MONTHS = ['Muharram','Safar','Rabiʻ I','Rabiʻ II','Jumada I','Jumada II',
-                            'Rajab','Shaʻban','Ramadan','Shawwal','Dhuʻl-Qiʻdah','Dhuʻl-Hijjah'];
-            return `${hd} ${MONTHS[(hm - 1) % 12]} ${hy}`;
-        }
-
-        // ╔══════════════════════════════════════════════════════════════════╗
-        // ║  FIX 3 — localDateInTz() hardened                              ║
-        // ║                                                                  ║
-        // ║  The adhan library requires a plain Date whose .getFullYear(),  ║
-        // ║  .getMonth(), .getDate() reflect the LOCAL calendar date at     ║
-        // ║  the target timezone — not UTC, not the browser's local zone.   ║
-        // ║                                                                  ║
-        // ║  Previous code used noon (12,0,0) which is mostly safe but      ║
-        // ║  was constructed from the browser's local date parts, not the   ║
-        // ║  target timezone's date parts. For users in e.g. UTC-5 querying ║
-        // ║  a UTC+7 location after 17:00 local time, the date would be     ║
-        // ║  one day behind, shifting all times by 24h worth of solar drift.║
-        // ║                                                                  ║
-        // ║  Fix: extract Y/M/D from Intl.DateTimeFormat in the target TZ, ║
-        // ║  then construct a local noon Date from those parts. This gives  ║
-        // ║  adhan the correct calendar date regardless of browser timezone.║
-        // ╚══════════════════════════════════════════════════════════════════╝
-        function localDateInTz(tz) {
-            const now = new Date();
-            const parts = new Intl.DateTimeFormat('en-CA', {
-                timeZone: tz,
-                year:  'numeric',
-                month: '2-digit',
-                day:   '2-digit'
-            }).formatToParts(now);
-            const get = t => parseInt(parts.find(p => p.type === t).value);
-            // Construct a Date whose local (browser) fields happen to match
-            // the target TZ's calendar date, set to noon to avoid DST edges.
-            return new Date(get('year'), get('month') - 1, get('day'), 12, 0, 0);
-        }
-
-        const $ = id => document.getElementById(id);
-        const cityInput = $('cityInput'), searchBtn = $('searchBtn'),
-              methodSelect = $('methodSelect'), mapLatLngEl = $('mapLatLng'), errorEl = $('errorMsg');
-
-        function refreshTimes() {
-            try {
-                const tz     = locationTimezone;
-                const coords = new adhan.Coordinates(lat, lng);
-                const params = getCalcParams(methodSelect.value);
-                const calcDate = localDateInTz(tz);
-                const pt     = new adhan.PrayerTimes(coords, calcDate, params);
-
-                $('fajr').textContent    = formatInTz(pt.fajr,    tz);
-                $('sunrise').textContent = formatInTz(pt.sunrise,  tz);
-                $('dhuhr').textContent   = formatInTz(pt.dhuhr,    tz);
-                $('asr').textContent     = formatInTz(pt.asr,      tz);
-                $('maghrib').textContent = formatInTz(pt.maghrib,  tz);
-                $('isha').textContent    = formatInTz(pt.isha,     tz);
-
-                const now = new Date();
-                $('hijriDate').textContent = hijriDateStr(localDateInTz(tz));
-                $('currentDate').textContent = now.toLocaleDateString('en-US', {
-                    timeZone: tz, month: 'short', day: 'numeric', year: 'numeric'
-                });
-                $('tzOffset').textContent = tzLabel(tz, now);
-                errorEl.textContent = '';
-            } catch (e) {
-                errorEl.textContent = 'calculation error';
-                console.error(e);
-            }
-        }
-
-        async function onLocationChange(newLat, newLng, knownTz) {
-            lat = newLat; lng = newLng;
-            const latDir = lat >= 0 ? 'N' : 'S', lngDir = lng >= 0 ? 'E' : 'W';
-            mapLatLngEl.textContent =
-                `${Math.abs(lat).toFixed(2)}°${latDir}  ${Math.abs(lng).toFixed(2)}°${lngDir}`;
-            ['fajr','sunrise','dhuhr','asr','maghrib','isha'].forEach(id => $(id).textContent = '—:—');
-            locationTimezone = knownTz || await fetchTimezone(lat, lng);
-            refreshTimes();
-        }
-
-        async function fetchCityName(la, lo) {
-            try {
-                const res = await fetch(
-                    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${la}&lon=${lo}&zoom=10`,
-                    { signal: AbortSignal.timeout(5000) }
-                );
-                const data = await res.json();
-                const addr = data.address || {};
-                cityInput.value = addr.city || addr.town || addr.village
-                    || data.display_name?.split(',')[0]
-                    || `${la.toFixed(2)}°, ${lo.toFixed(2)}°`;
-            } catch {
-                cityInput.value = `${la.toFixed(2)}°, ${lo.toFixed(2)}°`;
-            }
-        }
-
-        async function searchCity(query) {
-            if (!query) return;
-            errorEl.textContent = '';
-            try {
-                const res = await fetch(
-                    `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`,
-                    { signal: AbortSignal.timeout(6000) }
-                );
-                const data = await res.json();
-                if (data?.[0]) {
-                    const la = parseFloat(data[0].lat), lo = parseFloat(data[0].lon);
-                    cityInput.value = data[0].display_name.split(',')[0];
-                    map.setView([la, lo], 8);
-                    marker.setLatLng([la, lo]);
-                    await onLocationChange(la, lo, null);
-                } else {
-                    errorEl.textContent = 'city not found';
-                }
-            } catch {
-                errorEl.textContent = 'geocoding failed';
-            }
-        }
-
-        async function initUserLocation() {
-            try {
-                const res  = await fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(5000) });
-                const data = await res.json();
-                if (data?.latitude) {
-                    const la = parseFloat(data.latitude), lo = parseFloat(data.longitude);
-                    map.setView([la, lo], 6);
-                    marker.setLatLng([la, lo]);
-                    await fetchCityName(la, lo);
-                    await onLocationChange(la, lo, data.timezone || null);
-                    return;
-                }
-            } catch {}
-            map.setView([21.4225, 39.8262], 6);
-            marker.setLatLng([21.4225, 39.8262]);
-            await fetchCityName(21.4225, 39.8262);
-            await onLocationChange(21.4225, 39.8262, 'Asia/Riyadh');
-        }
-
-        function initMap() {
-            map = L.map('map', { zoomControl: false }).setView([0, 0], 2);
-
-            streetLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap'
-            }).addTo(map);
-
-            satelliteLayer = L.tileLayer(
-                'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-                { attribution: 'Tiles © Esri', maxZoom: 19 }
-            );
-
-            const redIcon = L.icon({
-                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
-                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
-                iconSize: [25, 41], iconAnchor: [12, 41],
-                popupAnchor: [1, -34], shadowSize: [41, 41], shadowAnchor: [12, 41]
-            });
-
-            marker = L.marker([0, 0], { draggable: true, icon: redIcon }).addTo(map);
-
-            marker.on('dragend', async (e) => {
-                const p = e.target.getLatLng();
-                await fetchCityName(p.lat, p.lng);
-                await onLocationChange(p.lat, p.lng, null);
-            });
-
-            map.on('click', async (e) => {
-                marker.setLatLng(e.latlng);
-                await fetchCityName(e.latlng.lat, e.latlng.lng);
-                await onLocationChange(e.latlng.lat, e.latlng.lng, null);
-            });
-
-            initUserLocation();
-
-            const kaabaCanvas = generateRingIconCanvas();
-            const kaabaIcon = L.icon({
-                iconUrl:     kaabaCanvas.toDataURL('image/png'),
-                iconSize:    [56, 56],
-                iconAnchor:  [28, 28],
-                popupAnchor: [0, -28]
-            });
-
-            L.marker([21.4225, 39.8262], { icon: kaabaIcon, title: 'Kaaba · Al-Masjid al-Ḥarām' })
-                .addTo(map)
-                .bindPopup('Al-Kaʿbah al-Musharrafa');
-
-            $('streetBtn').addEventListener('click', () => {
-                if (map.hasLayer(satelliteLayer)) map.removeLayer(satelliteLayer);
-                if (!map.hasLayer(streetLayer))   streetLayer.addTo(map);
-                $('streetBtn').classList.add('active');
-                $('satelliteBtn').classList.remove('active');
-            });
-            $('satelliteBtn').addEventListener('click', () => {
-                if (map.hasLayer(streetLayer))     map.removeLayer(streetLayer);
-                if (!map.hasLayer(satelliteLayer)) satelliteLayer.addTo(map);
-                $('satelliteBtn').classList.add('active');
-                $('streetBtn').classList.remove('active');
-            });
-
-            $('zoomInBtn').addEventListener('click',  () => map.zoomIn());
-            $('zoomOutBtn').addEventListener('click', () => map.zoomOut());
-        }
-
-        searchBtn.addEventListener('click',  () => searchCity(cityInput.value.trim()));
-        cityInput.addEventListener('keypress', e => { if (e.key === 'Enter') searchCity(cityInput.value.trim()); });
-        methodSelect.addEventListener('change', refreshTimes);
-        setInterval(refreshTimes, 60000);
-        window.addEventListener('load', initMap);
-    })();
-    </script>
 </body>
 </html>
