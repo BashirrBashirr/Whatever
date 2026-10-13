@@ -3,815 +3,489 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Free Refinance Calculator — See Your New Monthly Payment</title>
-<meta name="description" content="Calculate your refinance savings in seconds. See your new monthly payment, total interest, and lifetime savings. Free, no obligation." />
+<title>Tip Calculator — Split the Bill Fast</title>
+<meta name="description" content="Free tip calculator. Enter your bill, pick a tip percentage, and split the total between any number of people. Works instantly on mobile." />
 
 <style>
   :root {
-    --brand: #0f766e;
-    --brand-dark: #115e59;
-    --accent: #f59e0b;
-    --ink: #0f172a;
-    --muted: #64748b;
-    --line: #e2e8f0;
-    --bg: #f8fafc;
-    --white: #ffffff;
-    --success: #16a34a;
+    --bg: #0f172a;
+    --card: #1e293b;
+    --card-2: #334155;
+    --accent: #22d3ee;
+    --accent-2: #06b6d4;
+    --ink: #f1f5f9;
+    --muted: #94a3b8;
+    --line: #334155;
+    --success: #4ade80;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background: var(--bg);
+    background: radial-gradient(circle at 20% 0%, #1e293b 0%, #0f172a 60%);
     color: var(--ink);
-    line-height: 1.55;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
     -webkit-font-smoothing: antialiased;
   }
 
-  /* ---------- Header ---------- */
-  header {
-    background: var(--white);
-    border-bottom: 1px solid var(--line);
-    padding: 18px 24px;
-    position: sticky;
-    top: 0;
-    z-index: 50;
-  }
-  .header-inner {
-    max-width: 1100px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .logo {
-    font-weight: 800;
-    font-size: 20px;
-    color: var(--brand);
-    letter-spacing: -0.02em;
-  }
-  .logo span { color: var(--accent); }
-  .header-cta {
-    font-size: 14px;
-    color: var(--muted);
-  }
-  .header-cta strong { color: var(--ink); }
-
-  /* ---------- Hero ---------- */
-  .hero {
-    background: linear-gradient(135deg, #0f766e 0%, #115e59 100%);
-    color: var(--white);
-    padding: 56px 24px 72px;
-    text-align: center;
-  }
-  .hero h1 {
-    font-size: clamp(28px, 5vw, 44px);
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    margin-bottom: 14px;
-    line-height: 1.15;
-  }
-  .hero p {
-    font-size: clamp(16px, 2.2vw, 19px);
-    opacity: 0.92;
-    max-width: 640px;
-    margin: 0 auto;
-  }
-  .hero .badges {
-    display: flex;
-    gap: 22px;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-top: 26px;
-    font-size: 14px;
-    opacity: 0.95;
-  }
-  .hero .badges span::before {
-    content: "✓ ";
-    color: var(--accent);
-    font-weight: 700;
-  }
-
-  /* ---------- Main card ---------- */
-  .container {
-    max-width: 1100px;
-    margin: -40px auto 60px;
-    padding: 0 24px;
-  }
-  .card {
-    background: var(--white);
-    border-radius: 16px;
-    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.12);
+  .app {
+    width: 100%;
+    max-width: 420px;
+    background: var(--card);
+    border-radius: 20px;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
     overflow: hidden;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-  }
-  @media (max-width: 860px) {
-    .card { grid-template-columns: 1fr; }
+    border: 1px solid var(--line);
   }
 
-  .card-panel {
-    padding: 36px 32px;
+  /* ---------- Header ---------- */
+  .header {
+    padding: 22px 24px 16px;
+    text-align: center;
+    border-bottom: 1px solid var(--line);
   }
-  .card-panel.calc {
-    border-right: 1px solid var(--line);
+  .header h1 {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
   }
-  @media (max-width: 860px) {
-    .card-panel.calc { border-right: none; border-bottom: 1px solid var(--line); }
+  .header h1 span { color: var(--accent); }
+  .header p {
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-top: 4px;
   }
 
-  .panel-title {
-    font-size: 13px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--brand);
-    margin-bottom: 22px;
-  }
+  /* ---------- Body ---------- */
+  .body { padding: 22px 24px 24px; }
 
-  /* ---------- Form fields ---------- */
   .field { margin-bottom: 20px; }
+
   .field label {
     display: block;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
-    margin-bottom: 7px;
-    color: var(--ink);
-  }
-  .field .hint {
-    font-size: 12px;
     color: var(--muted);
-    font-weight: 400;
-    margin-left: 6px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
-  .input-wrap {
+
+  .bill-input {
     position: relative;
-    display: flex;
-    align-items: center;
   }
-  .input-wrap .prefix,
-  .input-wrap .suffix {
+  .bill-input .prefix {
     position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 26px;
+    font-weight: 700;
     color: var(--muted);
-    font-size: 15px;
-    font-weight: 600;
     pointer-events: none;
   }
-  .input-wrap .prefix { left: 14px; }
-  .input-wrap .suffix { right: 14px; }
-
-  input[type="number"],
-  input[type="text"],
-  input[type="email"],
-  input[type="tel"],
-  select {
+  .bill-input input {
     width: 100%;
-    padding: 12px 14px;
-    border: 1.5px solid var(--line);
+    padding: 16px 16px 16px 40px;
+    background: var(--card-2);
+    border: 2px solid transparent;
+    border-radius: 12px;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--ink);
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .bill-input input:focus { border-color: var(--accent); }
+
+  /* ---------- Tip buttons ---------- */
+  .tip-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+  }
+  .tip-btn {
+    padding: 12px 0;
+    border-radius: 10px;
+    background: var(--card-2);
+    border: 2px solid transparent;
+    color: var(--ink);
+    font-size: 15px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+  .tip-btn:hover { background: #475569; }
+  .tip-btn.active {
+    background: var(--accent);
+    color: #0f172a;
+    border-color: var(--accent);
+  }
+
+  .custom-tip {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .custom-tip input {
+    flex: 1;
+    padding: 11px 14px;
+    background: var(--card-2);
+    border: 2px solid transparent;
     border-radius: 10px;
     font-size: 15px;
-    font-family: inherit;
+    font-weight: 600;
     color: var(--ink);
-    background: var(--white);
-    transition: border-color 0.15s, box-shadow 0.15s;
+    font-family: inherit;
     outline: none;
   }
-  input.has-prefix { padding-left: 30px; }
-  input.has-suffix { padding-right: 34px; }
-
-  input:focus, select:focus {
-    border-color: var(--brand);
-    box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+  .custom-tip input:focus { border-color: var(--accent); }
+  .custom-tip span {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--muted);
   }
 
-  /* ---------- Slider ---------- */
-  .slider-row {
+  /* ---------- Split people ---------- */
+  .split-row {
     display: flex;
     align-items: center;
     gap: 12px;
   }
-  input[type="range"] {
-    flex: 1;
-    accent-color: var(--brand);
-    height: 6px;
-  }
-  .slider-value {
-    min-width: 78px;
-    text-align: right;
+  .round-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--card-2);
+    border: none;
+    color: var(--accent);
+    font-size: 24px;
     font-weight: 700;
-    font-size: 15px;
-    color: var(--brand);
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.12s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+  .round-btn:hover { background: #475569; }
+  .round-btn:active { transform: scale(0.94); }
+
+  .people-count {
+    flex: 1;
+    text-align: center;
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--ink);
+  }
+  .people-count small {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-top: 2px;
   }
 
   /* ---------- Results ---------- */
   .results {
-    background: #f0fdfa;
-    border: 1px solid #99f6e4;
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 22px;
+    margin-top: 24px;
+    padding-top: 22px;
+    border-top: 2px dashed var(--line);
   }
-  .results.empty {
-    background: #f8fafc;
-    border-color: var(--line);
-    color: var(--muted);
-    text-align: center;
-    font-size: 14px;
-    padding: 34px 20px;
+  .result-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 9px 0;
+    font-size: 15px;
   }
-  .result-main {
-    text-align: center;
-    padding-bottom: 16px;
-    border-bottom: 1px dashed #99f6e4;
-    margin-bottom: 16px;
+  .result-row .label { color: var(--muted); font-weight: 500; }
+  .result-row .value { font-weight: 700; color: var(--ink); }
+
+  .result-row.total {
+    margin-top: 10px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
   }
-  .result-main .label {
-    font-size: 13px;
-    color: var(--brand-dark);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-  }
-  .result-main .value {
-    font-size: 40px;
-    font-weight: 800;
-    color: var(--brand-dark);
-    letter-spacing: -0.03em;
-    line-height: 1.1;
-    margin-top: 4px;
-  }
-  .result-main .sub {
-    font-size: 13px;
-    color: var(--muted);
-    margin-top: 4px;
-  }
-  .result-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-  }
-  .result-grid .item .label {
-    font-size: 12px;
-    color: var(--muted);
-    font-weight: 600;
-  }
-  .result-grid .item .value {
-    font-size: 17px;
-    font-weight: 700;
+  .result-row.total .label {
     color: var(--ink);
-  }
-  .savings-positive { color: var(--success) !important; }
-
-  /* ---------- Lead form ---------- */
-  .lead-form .panel-title { color: var(--accent); }
-
-  .btn {
-    width: 100%;
-    padding: 15px 20px;
-    border: none;
-    border-radius: 10px;
-    background: var(--accent);
-    color: #1c1917;
     font-size: 16px;
+    font-weight: 700;
+  }
+  .result-row.total .value {
+    font-size: 30px;
     font-weight: 800;
+    color: var(--accent);
+    letter-spacing: -0.02em;
+  }
+
+  .per-person {
+    margin-top: 14px;
+    background: linear-gradient(135deg, #0891b2 0%, #06b6d4 100%);
+    border-radius: 14px;
+    padding: 18px;
+    text-align: center;
+    box-shadow: 0 8px 20px rgba(6, 182, 212, 0.25);
+  }
+  .per-person .label {
+    font-size: 12px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.85);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .per-person .value {
+    font-size: 38px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.03em;
+    margin-top: 4px;
+  }
+  .per-person .sub {
+    font-size: 12.5px;
+    color: rgba(255,255,255,0.85);
+    margin-top: 4px;
+    font-weight: 500;
+  }
+
+  /* ---------- Reset ---------- */
+  .reset-btn {
+    width: 100%;
+    margin-top: 18px;
+    padding: 13px;
+    background: transparent;
+    border: 1.5px solid var(--line);
+    border-radius: 10px;
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 600;
     font-family: inherit;
     cursor: pointer;
-    letter-spacing: -0.01em;
-    transition: background 0.15s, transform 0.05s;
+    transition: all 0.12s;
   }
-  .btn:hover { background: #d97706; }
-  .btn:active { transform: translateY(1px); }
-  .btn:disabled { opacity: 0.6; cursor: not-allowed; }
-
-  .consent {
-    display: flex;
-    gap: 9px;
-    align-items: flex-start;
-    margin: 16px 0 14px;
-  }
-  .consent input[type="checkbox"] {
-    margin-top: 3px;
-    width: 16px;
-    height: 16px;
-    accent-color: var(--brand);
-    flex-shrink: 0;
-  }
-  .consent label {
-    font-size: 11.5px;
-    color: var(--muted);
-    line-height: 1.5;
-  }
-  .consent a { color: var(--brand); text-decoration: underline; }
-
-  .trust-row {
-    display: flex;
-    gap: 16px;
-    justify-content: center;
-    margin-top: 16px;
-    font-size: 11.5px;
-    color: var(--muted);
-    flex-wrap: wrap;
-  }
-  .trust-row span::before {
-    content: "🔒 ";
-  }
-
-  /* ---------- Success state ---------- */
-  .success-box {
-    display: none;
-    text-align: center;
-    padding: 20px 0;
-  }
-  .success-box.show { display: block; }
-  .success-box .check {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: #dcfce7;
-    color: var(--success);
-    font-size: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 16px;
-  }
-  .success-box h3 {
-    font-size: 20px;
-    margin-bottom: 8px;
-  }
-  .success-box p {
-    font-size: 14px;
-    color: var(--muted);
-  }
-
-  /* ---------- Trust / SEO section ---------- */
-  .info-section {
-    max-width: 1100px;
-    margin: 0 auto 60px;
-    padding: 0 24px;
-  }
-  .info-section h2 {
-    font-size: 24px;
-    margin-bottom: 18px;
-    letter-spacing: -0.01em;
-  }
-  .info-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-  }
-  @media (max-width: 800px) {
-    .info-grid { grid-template-columns: 1fr; }
-  }
-  .info-card {
-    background: var(--white);
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    padding: 22px;
-  }
-  .info-card h3 {
-    font-size: 16px;
-    margin-bottom: 8px;
-  }
-  .info-card p {
-    font-size: 14px;
-    color: var(--muted);
+  .reset-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
   }
 
   /* ---------- Footer ---------- */
-  footer {
-    background: var(--ink);
-    color: #94a3b8;
-    padding: 36px 24px;
-    font-size: 12.5px;
-    line-height: 1.7;
-  }
-  .footer-inner { max-width: 1100px; margin: 0 auto; }
-  footer a { color: #cbd5e1; text-decoration: none; margin-right: 16px; }
-  footer a:hover { color: var(--white); }
-  .disclaimer {
-    margin-top: 18px;
-    padding-top: 18px;
-    border-top: 1px solid #1e293b;
+  .footer {
+    padding: 16px 24px 22px;
+    text-align: center;
     font-size: 11.5px;
-    color: #64748b;
+    color: var(--muted);
+    border-top: 1px solid var(--line);
   }
 
-  .error-msg {
-    color: #dc2626;
-    font-size: 12.5px;
-    margin-top: 6px;
-    display: none;
+  /* Remove number spinners */
+  input[type=number]::-webkit-outer-spin-button,
+  input[type=number]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
   }
-  .error-msg.show { display: block; }
-  input.invalid { border-color: #dc2626; }
+  input[type=number] { -moz-appearance: textfield; }
 </style>
 </head>
 <body>
 
-<!-- ================= HEADER ================= -->
-<header>
-  <div class="header-inner">
-    <div class="logo">Refi<span>Smart</span></div>
-    <div class="header-cta">Free calculator · <strong>No credit check</strong></div>
+<div class="app">
+
+  <div class="header">
+    <h1>Tip<span>Calc</span></h1>
+    <p>Split the bill in seconds</p>
   </div>
-</header>
 
-<!-- ================= HERO ================= -->
-<section class="hero">
-  <h1>See How Much You Could Save by Refinancing</h1>
-  <p>Enter a few details below to instantly estimate your new monthly payment and lifetime savings. Takes less than 30 seconds.</p>
-  <div class="badges">
-    <span>100% Free</span>
-    <span>No Obligation</span>
-    <span>No Credit Impact</span>
-  </div>
-</section>
+  <div class="body">
 
-<!-- ================= MAIN CARD ================= -->
-<div class="container">
-  <div class="card">
-
-    <!-- LEFT: CALCULATOR -->
-    <div class="card-panel calc">
-      <div class="panel-title">1. Your Current Loan</div>
-
-      <div class="field">
-        <label for="balance">Remaining Loan Balance</label>
-        <div class="input-wrap">
-          <span class="prefix">$</span>
-          <input type="number" id="balance" class="has-prefix" placeholder="250,000" min="1000" step="1000" value="250000" />
-        </div>
-      </div>
-
-      <div class="field">
-        <label for="rate">Current Interest Rate <span class="hint">%</span></label>
-        <div class="input-wrap">
-          <input type="number" id="rate" class="has-suffix" placeholder="6.5" min="0.1" max="20" step="0.1" value="6.5" />
-          <span class="suffix">%</span>
-        </div>
-      </div>
-
-      <div class="field">
-        <label for="term">Remaining Term</label>
-        <select id="term">
-          <option value="30">30 years</option>
-          <option value="25">25 years</option>
-          <option value="20">20 years</option>
-          <option value="15" selected>15 years</option>
-          <option value="10">10 years</option>
-        </select>
-      </div>
-
-      <div class="panel-title" style="margin-top:28px;">2. Your New Loan Offer</div>
-
-      <div class="field">
-        <label for="newRate">New Interest Rate <span class="hint">%</span></label>
-        <div class="input-wrap">
-          <input type="number" id="newRate" class="has-suffix" placeholder="5.5" min="0.1" max="20" step="0.1" value="5.5" />
-          <span class="suffix">%</span>
-        </div>
-      </div>
-
-      <div class="field">
-        <label for="newTerm">New Term</label>
-        <select id="newTerm">
-          <option value="30" selected>30 years</option>
-          <option value="25">25 years</option>
-          <option value="20">20 years</option>
-          <option value="15">15 years</option>
-          <option value="10">10 years</option>
-        </select>
-      </div>
-
-      <button class="btn" id="calcBtn" type="button">Calculate My Savings</button>
-
-      <!-- RESULTS -->
-      <div id="results" class="results empty" style="margin-top:22px;">
-        Enter your loan details and tap “Calculate My Savings.”
+    <!-- Bill amount -->
+    <div class="field">
+      <label for="bill">Bill Amount</label>
+      <div class="bill-input">
+        <span class="prefix">$</span>
+        <input type="number" id="bill" placeholder="0.00" inputmode="decimal" min="0" step="0.01" />
       </div>
     </div>
 
-    <!-- RIGHT: LEAD FORM -->
-    <div class="card-panel lead-form">
-      <div class="panel-title">3. Get Your Personalized Offers</div>
-
-      <div id="formWrap">
-        <p style="font-size:14px;color:var(--muted);margin-bottom:20px;">
-          Want to see real refinance offers from vetted lenders? Fill this out and we'll match you with up to 3 personalized quotes.
-        </p>
-
-        <form id="leadForm" novalidate>
-          <div class="field">
-            <label for="fname">Full Name</label>
-            <input type="text" id="fname" name="fname" placeholder="Jane Doe" autocomplete="name" required />
-            <div class="error-msg" data-for="fname">Please enter your name.</div>
-          </div>
-
-          <div class="field">
-            <label for="email">Email Address</label>
-            <input type="email" id="email" name="email" placeholder="jane@example.com" autocomplete="email" required />
-            <div class="error-msg" data-for="email">Please enter a valid email.</div>
-          </div>
-
-          <div class="field">
-            <label for="phone">Phone Number</label>
-            <input type="tel" id="phone" name="phone" placeholder="(555) 123-4567" autocomplete="tel" required />
-            <div class="error-msg" data-for="phone">Please enter a valid 10-digit phone number.</div>
-          </div>
-
-          <div class="field">
-            <label for="zip">ZIP Code</label>
-            <input type="text" id="zip" name="zip" placeholder="90210" inputmode="numeric" maxlength="5" autocomplete="postal-code" required />
-            <div class="error-msg" data-for="zip">Please enter a valid 5-digit ZIP.</div>
-          </div>
-
-          <div class="field">
-            <label for="credit">Estimated Credit Score</label>
-            <select id="credit" name="credit" required>
-              <option value="">Select range</option>
-              <option value="760+">Excellent (760+)</option>
-              <option value="700-759">Good (700–759)</option>
-              <option value="640-699">Fair (640–699)</option>
-              <option value="580-639">Poor (580–639)</option>
-              <option value="below-580">Below 580</option>
-            </select>
-            <div class="error-msg" data-for="credit">Please select a range.</div>
-          </div>
-
-          <!-- TCPA COMPLIANT CONSENT -->
-          <div class="consent">
-            <input type="checkbox" id="consent" name="consent" required />
-            <label for="consent">
-              By checking this box and submitting, I provide my electronic signature and express written consent for RefiSmart and its <a href="#partners">marketing partners</a> to contact me at the phone number and email provided — including via autodialed calls, texts, and prerecorded messages — about refinance and lending offers. Consent is not a condition of any purchase. Message and data rates may apply. I may opt out at any time by replying STOP or <a href="#contact">contacting us</a>. See <a href="#privacy">Privacy Policy</a> and <a href="#terms">Terms</a>.
-            </label>
-          </div>
-          <div class="error-msg" data-for="consent" style="margin-bottom:10px;">You must agree to the consent terms to continue.</div>
-
-          <button type="submit" class="btn" id="submitBtn">Get My Free Quotes →</button>
-
-          <div class="trust-row">
-            <span>SSL Secured</span>
-            <span>No Credit Check</span>
-            <span>Unsubscribe Anytime</span>
-          </div>
-        </form>
+    <!-- Tip % -->
+    <div class="field">
+      <label>Tip Percentage</label>
+      <div class="tip-grid" id="tipGrid">
+        <button type="button" class="tip-btn" data-tip="10">10%</button>
+        <button type="button" class="tip-btn" data-tip="15">15%</button>
+        <button type="button" class="tip-btn active" data-tip="18">18%</button>
+        <button type="button" class="tip-btn" data-tip="20">20%</button>
+        <button type="button" class="tip-btn" data-tip="25">25%</button>
       </div>
-
-      <!-- SUCCESS STATE -->
-      <div id="successBox" class="success-box">
-        <div class="check">✓</div>
-        <h3>You're all set!</h3>
-        <p>We're matching you with up to 3 vetted lenders. Check your email and phone within the next 15 minutes for personalized offers.</p>
+      <div class="custom-tip">
+        <input type="number" id="customTip" placeholder="Custom tip" inputmode="decimal" min="0" step="0.5" />
+        <span>%</span>
       </div>
     </div>
 
+    <!-- Split -->
+    <div class="field">
+      <label>Split Between</label>
+      <div class="split-row">
+        <button type="button" class="round-btn" id="minusBtn">−</button>
+        <div class="people-count">
+          <span id="peopleCount">1</span>
+          <small id="peopleLabel">person</small>
+        </div>
+        <button type="button" class="round-btn" id="plusBtn">+</button>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div class="results">
+      <div class="result-row">
+        <span class="label">Bill</span>
+        <span class="value" id="resBill">$0.00</span>
+      </div>
+      <div class="result-row">
+        <span class="label">Tip</span>
+        <span class="value" id="resTip">$0.00</span>
+      </div>
+      <div class="result-row total">
+        <span class="label">Total</span>
+        <span class="value" id="resTotal">$0.00</span>
+      </div>
+
+      <div class="per-person" id="perPersonBox" style="display:none;">
+        <div class="label">Each Person Pays</div>
+        <div class="value" id="resPerPerson">$0.00</div>
+        <div class="sub" id="perPersonSub"></div>
+      </div>
+    </div>
+
+    <button type="button" class="reset-btn" id="resetBtn">Reset</button>
+
   </div>
+
+  <div class="footer">
+    No sign-up · No tracking · Works offline
+  </div>
+
 </div>
 
-<!-- ================= INFO / TRUST SECTION ================= -->
-<section class="info-section">
-  <h2>Why Homeowners Refinance</h2>
-  <div class="info-grid">
-    <div class="info-card">
-      <h3>Lower Your Rate</h3>
-      <p>Even a 1% rate drop on a $300k loan can save you over $50,000 in interest over the life of the loan.</p>
-    </div>
-    <div class="info-card">
-      <h3>Reduce Monthly Payment</h3>
-      <p>Extending your term or lowering your rate can free up hundreds of dollars in monthly cash flow.</p>
-    </div>
-    <div class="info-card">
-      <h3>Access Home Equity</h3>
-      <p>A cash-out refinance lets you tap into your home's equity for renovations, debt payoff, or investments.</p>
-    </div>
-  </div>
-</section>
-
-<!-- ================= FOOTER ================= -->
-<footer>
-  <div class="footer-inner">
-    <div style="margin-bottom:14px;">
-      <a href="#privacy">Privacy Policy</a>
-      <a href="#terms">Terms of Use</a>
-      <a href="#contact">Contact</a>
-      <a href="#partners">Marketing Partners</a>
-    </div>
-    <div class="disclaimer">
-      RefiSmart is not a lender, mortgage broker, or financial advisor. We do not make loans, offer credit, or make credit decisions. We connect consumers with third-party lenders and marketing partners who may contact you with offers. Information provided is for illustrative purposes only and does not constitute a loan offer or guarantee of approval. Rates, terms, and availability vary by lender and state. Refinancing may increase the total interest paid over the life of your loan. Consult a licensed financial professional before making borrowing decisions.
-      <br /><br />
-      © <span id="year"></span> RefiSmart. All rights reserved.
-    </div>
-  </div>
-</footer>
-
 <script>
-/* =========================================================
-   1. CALCULATOR LOGIC
-   ========================================================= */
-function amortizedPayment(principal, annualRate, years) {
-  const r = (annualRate / 100) / 12;
-  const n = years * 12;
-  if (r === 0) return principal / n;
-  return principal * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
-}
+(function () {
+  // ---------- State ----------
+  let tipPercent = 18;
+  let people = 1;
 
-function fmtMoney(n) {
-  return '$' + Math.round(n).toLocaleString('en-US');
-}
+  // ---------- Elements ----------
+  const billInput   = document.getElementById('bill');
+  const customTip   = document.getElementById('customTip');
+  const tipButtons  = document.querySelectorAll('.tip-btn');
+  const peopleCount = document.getElementById('peopleCount');
+  const peopleLabel = document.getElementById('peopleLabel');
+  const minusBtn    = document.getElementById('minusBtn');
+  const plusBtn     = document.getElementById('plusBtn');
+  const resetBtn    = document.getElementById('resetBtn');
 
-const calcBtn = document.getElementById('calcBtn');
-const resultsEl = document.getElementById('results');
+  const resBill       = document.getElementById('resBill');
+  const resTip        = document.getElementById('resTip');
+  const resTotal      = document.getElementById('resTotal');
+  const resPerPerson  = document.getElementById('resPerPerson');
+  const perPersonBox  = document.getElementById('perPersonBox');
+  const perPersonSub  = document.getElementById('perPersonSub');
 
-calcBtn.addEventListener('click', () => {
-  const balance = parseFloat(document.getElementById('balance').value);
-  const rate = parseFloat(document.getElementById('rate').value);
-  const term = parseFloat(document.getElementById('term').value);
-  const newRate = parseFloat(document.getElementById('newRate').value);
-  const newTerm = parseFloat(document.getElementById('newTerm').value);
+  // ---------- Helpers ----------
+  const fmt = (n) => '$' + (isFinite(n) ? n.toFixed(2) : '0.00');
 
-  if (!balance || !rate || !term || !newRate || !newTerm) {
-    resultsEl.className = 'results empty';
-    resultsEl.textContent = 'Please fill in all fields above.';
-    return;
+  // ---------- Render ----------
+  function calculate() {
+    const bill = parseFloat(billInput.value) || 0;
+    const tipAmount = bill * (tipPercent / 100);
+    const total = bill + tipAmount;
+    const perPerson = people > 0 ? total / people : total;
+
+    resBill.textContent  = fmt(bill);
+    resTip.textContent   = fmt(tipAmount);
+    resTotal.textContent = fmt(total);
+
+    if (people > 1) {
+      perPersonBox.style.display = 'block';
+      resPerPerson.textContent = fmt(perPerson);
+      perPersonSub.textContent =
+        `${people} people × ${fmt(perPerson)}  ·  includes ${fmt(tipAmount / people)} tip each`;
+    } else {
+      perPersonBox.style.display = 'none';
+    }
   }
 
-  const currentPayment = amortizedPayment(balance, rate, term);
-  const newPayment = amortizedPayment(balance, newRate, newTerm);
+  // ---------- Tip selection ----------
+  tipButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tipButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      tipPercent = parseFloat(btn.dataset.tip);
+      customTip.value = '';
+      calculate();
+    });
+  });
 
-  // Remaining interest under current loan
-  const currentRemainingInterest = (currentPayment * term * 12) - balance;
-  const newTotalInterest = (newPayment * newTerm * 12) - balance;
+  customTip.addEventListener('input', () => {
+    const v = parseFloat(customTip.value);
+    if (!isNaN(v) && v >= 0) {
+      tipPercent = v;
+      tipButtons.forEach(b => b.classList.remove('active'));
+      calculate();
+    } else if (customTip.value === '') {
+      tipPercent = 18;
+      document.querySelector('.tip-btn[data-tip="18"]').classList.add('active');
+      calculate();
+    }
+  });
 
-  const monthlySavings = currentPayment - newPayment;
-  const lifetimeSavings = currentRemainingInterest - newTotalInterest;
+  // ---------- Bill input ----------
+  billInput.addEventListener('input', calculate);
 
-  const savingsClass = monthlySavings > 0 ? 'savings-positive' : '';
-
-  resultsEl.className = 'results';
-  resultsEl.innerHTML = `
-    <div class="result-main">
-      <div class="label">New Monthly Payment</div>
-      <div class="value">${fmtMoney(newPayment)}</div>
-      <div class="sub">vs. ${fmtMoney(currentPayment)} today</div>
-    </div>
-    <div class="result-grid">
-      <div class="item">
-        <div class="label">Monthly Savings</div>
-        <div class="value ${savingsClass}">${monthlySavings > 0 ? fmtMoney(monthlySavings) : '—'}</div>
-      </div>
-      <div class="item">
-        <div class="label">Lifetime Interest Savings</div>
-        <div class="value ${savingsClass}">${lifetimeSavings > 0 ? fmtMoney(lifetimeSavings) : '—'}</div>
-      </div>
-      <div class="item">
-        <div class="label">Current Total Interest Left</div>
-        <div class="value">${fmtMoney(currentRemainingInterest)}</div>
-      </div>
-      <div class="item">
-        <div class="label">New Total Interest</div>
-        <div class="value">${fmtMoney(newTotalInterest)}</div>
-      </div>
-    </div>
-  `;
-
-  // Smooth scroll to the lead form on mobile
-  if (window.innerWidth < 860) {
-    document.querySelector('.lead-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  // ---------- Split buttons ----------
+  function updatePeople() {
+    peopleCount.textContent = people;
+    peopleLabel.textContent = people === 1 ? 'person' : 'people';
+    minusBtn.disabled = people <= 1;
+    minusBtn.style.opacity = people <= 1 ? 0.4 : 1;
+    calculate();
   }
-});
 
-/* =========================================================
-   2. LEAD FORM VALIDATION + SUBMISSION
-   ========================================================= */
-const leadForm = document.getElementById('leadForm');
-const submitBtn = document.getElementById('submitBtn');
-const successBox = document.getElementById('successBox');
-const formWrap = document.getElementById('formWrap');
+  minusBtn.addEventListener('click', () => {
+    if (people > 1) { people--; updatePeople(); }
+  });
 
-function showError(fieldId, show) {
-  const input = document.getElementById(fieldId);
-  const err = document.querySelector(`.error-msg[data-for="${fieldId}"]`);
-  if (input) input.classList.toggle('invalid', show);
-  if (err) err.classList.toggle('show', show);
-}
+  plusBtn.addEventListener('click', () => {
+    if (people < 99) { people++; updatePeople(); }
+  });
 
-function validate() {
-  let ok = true;
+  // ---------- Reset ----------
+  resetBtn.addEventListener('click', () => {
+    billInput.value = '';
+    customTip.value = '';
+    tipPercent = 18;
+    people = 1;
+    tipButtons.forEach(b => b.classList.remove('active'));
+    document.querySelector('.tip-btn[data-tip="18"]').classList.add('active');
+    updatePeople();
+    calculate();
+    billInput.focus();
+  });
 
-  const fname = document.getElementById('fname').value.trim();
-  showError('fname', fname.length < 2);
-  if (fname.length < 2) ok = false;
-
-  const email = document.getElementById('email').value.trim();
-  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  showError('email', !emailOk);
-  if (!emailOk) ok = false;
-
-  const phone = document.getElementById('phone').value.replace(/\D/g, '');
-  const phoneOk = phone.length === 10;
-  showError('phone', !phoneOk);
-  if (!phoneOk) ok = false;
-
-  const zip = document.getElementById('zip').value.trim();
-  const zipOk = /^\d{5}$/.test(zip);
-  showError('zip', !zipOk);
-  if (!zipOk) ok = false;
-
-  const credit = document.getElementById('credit').value;
-  showError('credit', !credit);
-  if (!credit) ok = false;
-
-  const consent = document.getElementById('consent').checked;
-  showError('consent', !consent);
-  if (!consent) ok = false;
-
-  return ok;
-}
-
-// Clear errors as the user types
-['fname','email','phone','zip','credit'].forEach(id => {
-  const el = document.getElementById(id);
-  el.addEventListener('input', () => showError(id, false));
-  el.addEventListener('change', () => showError(id, false));
-});
-document.getElementById('consent').addEventListener('change', () => showError('consent', false));
-
-leadForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  if (!validate()) return;
-
-  submitBtn.disabled = true;
-  submitBtn.textContent = 'Submitting…';
-
-  // Gather all data (calculator + form)
-  const payload = {
-    // Lead info
-    name: document.getElementById('fname').value.trim(),
-    email: document.getElementById('email').value.trim(),
-    phone: document.getElementById('phone').value.replace(/\D/g, ''),
-    zip: document.getElementById('zip').value.trim(),
-    credit: document.getElementById('credit').value,
-    consent: true,
-    consentTimestamp: new Date().toISOString(),
-    // Loan info
-    balance: document.getElementById('balance').value,
-    currentRate: document.getElementById('rate').value,
-    currentTerm: document.getElementById('term').value,
-    newRate: document.getElementById('newRate').value,
-    newTerm: document.getElementById('newTerm').value,
-    // Meta
-    source: window.location.href,
-    userAgent: navigator.userAgent
-  };
-
-  /* =========================================================
-     >>> SEND THE LEAD <<<
-     Replace the block below with your real endpoint.
-     Options:
-       - Your own backend (POST /api/lead)
-       - A lead marketplace API (QuinStreet, Modernize, etc.)
-       - A form service (Formspree, Web3Forms, Basin, Getform)
-       - A CRM webhook (HubSpot, Zapier, Make)
-     ========================================================= */
-
-  try {
-    // EXAMPLE using Formspree — replace YOUR_FORM_ID
-    // const res = await fetch('https://formspree.io/f/YOUR_FORM_ID', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-    //   body: JSON.stringify(payload)
-    // });
-    // if (!res.ok) throw new Error('Submission failed');
-
-    // Demo mode: log to console + simulate success
-    console.log('LEAD SUBMITTED:', payload);
-    await new Promise(r => setTimeout(r, 900));
-
-    formWrap.style.display = 'none';
-    successBox.classList.add('show');
-
-  } catch (err) {
-    console.error(err);
-    submitBtn.disabled = false;
-    submitBtn.textContent = 'Get My Free Quotes →';
-    alert('Something went wrong. Please try again.');
-  }
-});
-
-/* =========================================================
-   3. MISC
-   ========================================================= */
-document.getElementById('year').textContent = new Date().getFullYear();
-
-// Optional phone formatting
-document.getElementById('phone').addEventListener('input', (e) => {
-  let v = e.target.value.replace(/\D/g, '').slice(0, 10);
-  if (v.length >= 6) v = `(${v.slice(0,3)}) ${v.slice(3,6)}-${v.slice(6)}`;
-  else if (v.length >= 3) v = `(${v.slice(0,3)}) ${v.slice(3)}`;
-  e.target.value = v;
-});
+  // ---------- Init ----------
+  updatePeople();
+  calculate();
+})();
 </script>
 
 </body>
