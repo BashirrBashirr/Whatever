@@ -453,7 +453,7 @@
     scene.fog = new THREE.FogExp2(0x040607, 0.03);
 
     const camera = new THREE.PerspectiveCamera(38, window.innerWidth / window.innerHeight, 0.1, 100);
-    camera.position.set(4.45, 2.0, 5.3);
+    camera.position.set(0, 1.4, 9.5); // provisional — final position set after model loads
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -481,9 +481,6 @@
     controls.target.set(0, 0, 0);
 
     // ----- SMOOTH DAMPED ZOOM -----
-    // The stock OrbitControls dolly snaps to a new distance on every wheel
-    // event, which reads as "too close / too far". We drive a target
-    // distance instead, and ease the camera toward it each frame.
     const MIN_DISTANCE = 4.5;
     const MAX_DISTANCE = 12.0;
 
@@ -582,6 +579,15 @@
       (gltf) => {
         const model = gltf.scene;
 
+        // --------------------------------------------------------
+        //  STEP 1 — rotate first, THEN measure, THEN center.
+        //  The original code centered in unrotated space and then
+        //  rotated, which left the brain offset from the origin
+        //  (the rotation flips the sign of the X/Z center offset).
+        // --------------------------------------------------------
+        model.rotation.y = Math.PI;
+        model.updateMatrixWorld(true);
+
         const box = new THREE.Box3().setFromObject(model);
         const size = box.getSize(new THREE.Vector3());
         const center = box.getCenter(new THREE.Vector3());
@@ -589,15 +595,63 @@
         const scale = 2.4 / maxDim;
 
         model.scale.setScalar(scale);
-        model.position.sub(center.multiplyScalar(scale));
-        model.rotation.y = Math.PI;
+        // Bring the (rotated, scaled) bounding-box center to the origin:
+        model.position.set(-center.x * scale, -center.y * scale, -center.z * scale);
+        model.updateMatrixWorld(true);
 
+        // --------------------------------------------------------
+        //  STEP 2 — detect the anatomical FRONT from geometry.
+        //  The brainstem/cerebellum sit at the bottom *posterior*
+        //  of the brain, so the horizontal centroid of the lowest
+        //  vertices points "backward" from the brain's center.
+        //  The anterior direction is the opposite.
+        // --------------------------------------------------------
+        const pts = [];
+        model.traverse((child) => {
+          if (child.isMesh && child.geometry?.attributes?.position) {
+            const pa = child.geometry.attributes.position;
+            const m = child.matrixWorld;
+            const step = Math.max(1, Math.floor(pa.count / 5000));
+            for (let i = 0; i < pa.count; i += step) {
+              pts.push(new THREE.Vector3().fromBufferAttribute(pa, i).applyMatrix4(m));
+            }
+          }
+        });
+
+        let antDir = new THREE.Vector3(0, 0, 1); // fallback
+        if (pts.length > 50) {
+          const bb = new THREE.Box3().setFromPoints(pts);
+          const bc = bb.getCenter(new THREE.Vector3());
+          const lowCut = bb.min.y + (bb.max.y - bb.min.y) * 0.12;
+          let sx = 0, sz = 0, n = 0;
+          for (const p of pts) {
+            if (p.y <= lowCut) { sx += p.x - bc.x; sz += p.z - bc.z; n++; }
+          }
+          if (n > 5 && (Math.abs(sx) + Math.abs(sz)) > 1e-6) {
+            const posteriorAngle = Math.atan2(sz, sx);
+            const anteriorAngle = posteriorAngle + Math.PI;
+            antDir.set(Math.cos(anteriorAngle), 0, Math.sin(anteriorAngle));
+          }
+        }
+
+        // --------------------------------------------------------
+        //  STEP 3 — place the camera in front of the brain, looking
+        //  at its center. Slight elevation so you see the top face
+        //  a touch, but not enough to be a 3/4 view.
+        // --------------------------------------------------------
+        const camDist = 9.5;
+        camera.position.copy(antDir).multiplyScalar(camDist);
+        camera.position.y = 1.4;
+        targetDistance = camera.position.length();
+        controls.target.set(0, 0, 0);
+
+        // --- material + shadow setup (unchanged) ---
         model.traverse((child) => {
           if (child.isMesh) {
             child.castShadow = true;
             child.receiveShadow = true;
             const mats = Array.isArray(child.material) ? child.material : [child.material];
-            mats.forEach(mat => {
+            mats.forEach((mat) => {
               if (mat) {
                 mat.roughness = Math.min(mat.roughness ?? 0.7, 0.75);
                 mat.metalness = Math.max(mat.metalness ?? 0.0, 0.02);
@@ -765,12 +819,6 @@
       }
     });
 
-    /**
-     * Find region at a world-space point. Uses a priority system
-     * based on order (smaller/deeper structures win) so that
-     * structures like the amygdala and hippocampus remain
-     * clickable even where they lie under a larger cortical lobe.
-     */
     function findRegionAt(worldPoint) {
       if (!brainMesh) return null;
 
@@ -793,8 +841,6 @@
         }
 
         if (angle < region.angularRadius * 1.08) {
-          // Score = normalized angle, with an order-based tie-breaker
-          // so smaller / more specific structures win over large lobes.
           const score = angle / region.angularRadius + (region.order || 0) * 0.001;
           if (score < bestScore) {
             bestScore = score;
@@ -845,7 +891,6 @@
 
       controls.update();
 
-      // ease the camera toward the requested zoom distance
       const currentDistance = camera.position.distanceTo(controls.target);
       const nextDistance = THREE.MathUtils.damp(currentDistance, targetDistance, 10, dt);
 
