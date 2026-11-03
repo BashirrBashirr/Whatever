@@ -453,7 +453,7 @@
     scene.fog = new THREE.FogExp2(0x040607, 0.03);
 
     const camera = new THREE.PerspectiveCamera(38, window.innerWidth / window.innerHeight, 0.1, 100);
-    camera.position.set(5.5, 2.5, 6.5);
+    camera.position.set(4.45, 2.0, 5.3);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -479,6 +479,53 @@
     controls.minPolarAngle = Math.PI / 4;
     controls.maxPolarAngle = Math.PI / 1.7;
     controls.target.set(0, 0, 0);
+
+    // ----- SMOOTH DAMPED ZOOM -----
+    // The stock OrbitControls dolly snaps to a new distance on every wheel
+    // event, which reads as "too close / too far". We drive a target
+    // distance instead, and ease the camera toward it each frame.
+    const MIN_DISTANCE = 4.5;
+    const MAX_DISTANCE = 12.0;
+
+    controls.enableZoom = false;
+
+    let targetDistance = camera.position.distanceTo(controls.target);
+    const clampDistance = (d) => THREE.MathUtils.clamp(d, MIN_DISTANCE, MAX_DISTANCE);
+
+    renderer.domElement.addEventListener('wheel', (event) => {
+      event.preventDefault();
+
+      let delta = event.deltaY;
+      if (event.deltaMode === 1) delta *= 16;        // lines  -> px
+      else if (event.deltaMode === 2) delta *= 100;  // pages  -> px
+
+      targetDistance = clampDistance(targetDistance * Math.exp(delta * 0.0009));
+    }, { passive: false });
+
+    // two-finger pinch (touch) — feeds the same damped target
+    let pinchStartSpan = 0;
+    let pinchStartTarget = 0;
+    const touchSpan = (touches) => Math.hypot(
+      touches[0].clientX - touches[1].clientX,
+      touches[0].clientY - touches[1].clientY
+    );
+
+    renderer.domElement.addEventListener('touchstart', (event) => {
+      if (event.touches.length === 2) {
+        pinchStartSpan = touchSpan(event.touches);
+        pinchStartTarget = targetDistance;
+      }
+    }, { passive: true });
+
+    renderer.domElement.addEventListener('touchmove', (event) => {
+      if (event.touches.length === 2 && pinchStartSpan > 0) {
+        targetDistance = clampDistance(pinchStartTarget * (pinchStartSpan / touchSpan(event.touches)));
+      }
+    }, { passive: true });
+
+    renderer.domElement.addEventListener('touchend', (event) => {
+      if (event.touches.length < 2) pinchStartSpan = 0;
+    }, { passive: true });
 
     // ----- LIGHTING -----
     scene.add(new THREE.AmbientLight(0x3a4258, 0.9));
@@ -791,11 +838,22 @@
     // ============================================================
     const clock = new THREE.Clock();
     function animate() {
-      const t = clock.getElapsedTime();
+      const dt = Math.min(clock.getDelta(), 0.1);
+      const t = clock.elapsedTime;
       brainGroup.rotation.y = Math.sin(t * 0.08) * 0.03;
       uPulse.value = t;
 
       controls.update();
+
+      // ease the camera toward the requested zoom distance
+      const currentDistance = camera.position.distanceTo(controls.target);
+      const nextDistance = THREE.MathUtils.damp(currentDistance, targetDistance, 10, dt);
+
+      camera.position
+        .sub(controls.target)
+        .setLength(nextDistance)
+        .add(controls.target);
+
       renderer.render(scene, camera);
       requestAnimationFrame(animate);
     }
