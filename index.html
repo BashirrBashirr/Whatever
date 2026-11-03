@@ -235,69 +235,203 @@
     import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
     // ============================================================
-    //  REGION DEFINITIONS
-    //  Each region is defined by a normalized anatomical "center"
-    //  in the brain's local coordinate space (roughly a unit sphere
-    //  after normalization), plus an angular radius that defines
-    //  the extent of the region on the brain surface.
-    //  The brain model faces +Z (front) and +Y (up).
+    //  ANATOMICALLY REFINED REGION DEFINITIONS
+    //  Orientation of the normalized brain model:
+    //    +Z = anterior (frontal pole)
+    //    -Z = posterior (occipital pole)
+    //    +Y = superior (vertex)
+    //    -Y = inferior (base)
+    //    +X = right hemisphere lateral
+    //
+    //  Directions are unit vectors pointing at the anatomical
+    //  center of each structure. Radii are the angular extent of
+    //  the region on the brain surface (radians). Bilateral
+    //  structures are mirrored across the X-axis.
+    //
+    //  Landmark sulci used for placement:
+    //   • Central sulcus: ~35° behind +Z, separating frontal/parietal
+    //   • Lateral sulcus (Sylvian): ~35° below equator, side
+    //   • Parieto-occipital sulcus: ~70° behind +Y, top-back
+    //   • Calcarine sulcus: medial occipital (visual cortex)
     // ============================================================
     const REGIONS = {
+      // ---------------- CORTICAL LOBES ----------------
       frontal: {
         name: 'Frontal Lobe',
         latin: 'Lobus frontalis',
-        desc: 'Executive functions, decision-making, voluntary movement, speech production (Broca\'s area), and personality.',
+        desc: 'Anterior to the central sulcus. Contains the primary motor cortex (precentral gyrus), premotor area, prefrontal cortex, and Broca\'s speech area. Responsible for executive function, planning, voluntary movement, and personality.',
         color: new THREE.Color(0x4a9eff),
-        // Direction on the surface (normalized). Front-upper area.
-        dir: new THREE.Vector3(0.0, 0.15, 1.0).normalize(),
-        // Angular extent in radians
-        angularRadius: 1.05,
+        dir: new THREE.Vector3(0.15, 0.35, 0.92).normalize(),
+        angularRadius: 0.72,
+        bilateral: true,
+        order: 0,
       },
       parietal: {
         name: 'Parietal Lobe',
         latin: 'Lobus parietalis',
-        desc: 'Somatosensory processing, spatial awareness, navigation, and integration of sensory information.',
+        desc: 'Between the central sulcus anteriorly and the parieto-occipital sulcus posteriorly. Contains the primary somatosensory cortex (postcentral gyrus), and the superior/inferior parietal lobules for spatial attention and navigation.',
         color: new THREE.Color(0x4ae3c0),
-        // Top-back area
-        dir: new THREE.Vector3(0.0, 1.0, -0.25).normalize(),
-        angularRadius: 0.95,
+        dir: new THREE.Vector3(0.2, 0.92, -0.35).normalize(),
+        angularRadius: 0.6,
+        bilateral: true,
+        order: 1,
       },
       temporal: {
         name: 'Temporal Lobe',
         latin: 'Lobus temporalis',
-        desc: 'Auditory processing, memory formation (hippocampus), language comprehension, and emotional association.',
+        desc: 'Inferior to the lateral (Sylvian) sulcus. Contains primary auditory cortex (Heschl\'s gyrus), Wernicke\'s area, and medial structures like the hippocampus and amygdala. Critical for hearing, language, and memory.',
         color: new THREE.Color(0xffa64a),
-        // Side-lower area (only right side visible by default)
-        dir: new THREE.Vector3(1.0, -0.25, 0.1).normalize(),
-        angularRadius: 0.85,
+        dir: new THREE.Vector3(0.95, -0.28, 0.05).normalize(),
+        angularRadius: 0.52,
+        bilateral: true,
+        order: 2,
       },
       occipital: {
         name: 'Occipital Lobe',
         latin: 'Lobus occipitalis',
-        desc: 'Primary visual cortex (V1) and visual association areas. Processes shape, color, motion, and visual recognition.',
+        desc: 'Posterior to the parieto-occipital sulcus. Contains the primary visual cortex (V1) along the calcarine sulcus, plus visual association areas V2–V5. Dedicated to processing visual information.',
         color: new THREE.Color(0xa45aff),
-        // Back-lower-upper area
-        dir: new THREE.Vector3(0.0, 0.35, -1.0).normalize(),
-        angularRadius: 0.85,
+        dir: new THREE.Vector3(0.1, 0.25, -0.96).normalize(),
+        angularRadius: 0.5,
+        bilateral: true,
+        order: 3,
       },
+      insula: {
+        name: 'Insula',
+        latin: 'Insula',
+        desc: 'Hidden within the lateral sulcus, covered by the operculum. Involved in interoception (awareness of internal body state), taste, emotion, and autonomic control. Often called the "fifth lobe".',
+        color: new THREE.Color(0xff6b6b),
+        dir: new THREE.Vector3(0.78, 0.08, 0.28).normalize(),
+        angularRadius: 0.24,
+        bilateral: true,
+        order: 4,
+      },
+      cingulate: {
+        name: 'Cingulate Cortex',
+        latin: 'Cortex cingularis',
+        desc: 'Arch-shaped medial cortex above the corpus callosum. Anterior cingulate handles error detection and emotion; posterior cingulate is part of the default mode network. Key limbic component.',
+        color: new THREE.Color(0xffe66d),
+        dir: new THREE.Vector3(0.12, 0.78, 0.28).normalize(),
+        angularRadius: 0.26,
+        bilateral: false,   // represented as the medial arch
+        order: 5,
+      },
+      // ---------------- MIDLINE / COMMISSURAL ----------------
+      corpusCallosum: {
+        name: 'Corpus Callosum',
+        latin: 'Corpus callosum',
+        desc: 'Massive C-shaped white-matter commissure of ~200 million axons connecting the two hemispheres. Enables interhemispheric transfer of motor, sensory, and cognitive information. Visible only in a midsagittal section.',
+        color: new THREE.Color(0xe8e8e8),
+        dir: new THREE.Vector3(0, 0.55, 0.1).normalize(),
+        angularRadius: 0.3,
+        bilateral: false,
+        order: 6,
+      },
+      // ---------------- DIENCEPHALON ----------------
+      thalamus: {
+        name: 'Thalamus',
+        latin: 'Thalamus',
+        desc: 'Bilateral egg-shaped gray matter at the center of the diencephalon. Acts as the brain\'s sensory relay station — all sensory modalities except smell pass through before reaching the cortex. Also involved in motor and limbic circuits.',
+        color: new THREE.Color(0xff9ff3),
+        dir: new THREE.Vector3(0.22, 0.28, -0.15).normalize(),
+        angularRadius: 0.24,
+        bilateral: true,
+        order: 7,
+      },
+      hypothalamus: {
+        name: 'Hypothalamus',
+        latin: 'Hypothalamus',
+        desc: 'Below the thalamus, forming the floor of the third ventricle. Regulates the autonomic nervous system, body temperature, hunger, thirst, sleep-wake cycles, and controls the pituitary gland via the hypothalamic-pituitary axis.',
+        color: new THREE.Color(0xfeca57),
+        dir: new THREE.Vector3(0, -0.05, 0.3).normalize(),
+        angularRadius: 0.18,
+        bilateral: false,
+        order: 8,
+      },
+      pineal: {
+        name: 'Pineal Gland',
+        latin: 'Glandula pinealis',
+        desc: 'Small pine-cone-shaped endocrine gland at the posterior epithalamus, above the midbrain. Secretes melatonin to regulate the circadian rhythm and sleep-wake cycle. Part of the epithalamus.',
+        color: new THREE.Color(0xc8d6e5),
+        dir: new THREE.Vector3(0, 0.18, -0.6).normalize(),
+        angularRadius: 0.13,
+        bilateral: false,
+        order: 9,
+      },
+      pituitary: {
+        name: 'Pituitary Gland',
+        latin: 'Hypophysis',
+        desc: 'Pea-sized "master gland" in the sella turcica, connected to the hypothalamus by the infundibulum. Secretes hormones controlling growth, metabolism, reproduction, and the other endocrine glands.',
+        color: new THREE.Color(0xf368e0),
+        dir: new THREE.Vector3(0, -0.55, 0.28).normalize(),
+        angularRadius: 0.13,
+        bilateral: false,
+        order: 10,
+      },
+      // ---------------- BASAL GANGLIA ----------------
+      basalGanglia: {
+        name: 'Basal Ganglia',
+        latin: 'Nuclei basales',
+        desc: 'Deep gray-matter nuclei (striatum, globus pallidus, substantia nigra, subthalamic nucleus). Central to motor control, action selection, procedural learning, and reward. Dysfunction causes Parkinson\'s and Huntington\'s.',
+        color: new THREE.Color(0x48dbfb),
+        dir: new THREE.Vector3(0.4, 0.28, 0.15).normalize(),
+        angularRadius: 0.24,
+        bilateral: true,
+        order: 11,
+      },
+      // ---------------- LIMBIC ----------------
+      hippocampus: {
+        name: 'Hippocampus',
+        latin: 'Hippocampus',
+        desc: 'Curved, seahorse-shaped structure in the medial temporal lobe. Essential for consolidation of short-term to long-term memory and for spatial navigation. One of the first regions affected in Alzheimer\'s disease.',
+        color: new THREE.Color(0x1dd1a1),
+        dir: new THREE.Vector3(0.65, -0.35, -0.28).normalize(),
+        angularRadius: 0.2,
+        bilateral: true,
+        order: 12,
+      },
+      amygdala: {
+        name: 'Amygdala',
+        latin: 'Corpus amygdaloideum',
+        desc: 'Almond-shaped nuclei in the medial temporal pole, anterior to the hippocampus. Central to fear conditioning, threat detection, and emotional salience. Part of the limbic system.',
+        color: new THREE.Color(0xff6b81),
+        dir: new THREE.Vector3(0.6, -0.28, 0.4).normalize(),
+        angularRadius: 0.17,
+        bilateral: true,
+        order: 13,
+      },
+      // ---------------- HINDBRAIN ----------------
       cerebellum: {
         name: 'Cerebellum',
         latin: 'Cerebellum',
-        desc: 'Motor coordination, balance, posture, and motor learning. Fine-tunes movements and maintains equilibrium.',
+        desc: 'Folded "little brain" in the posterior cranial fossa, inferior to the occipital lobe. Contains more neurons than the cerebrum. Coordinates movement, maintains balance and posture, and participates in motor learning.',
         color: new THREE.Color(0xff5a8a),
-        // Lower-back, specifically below occipital
-        dir: new THREE.Vector3(0.0, -0.75, -0.85).normalize(),
-        angularRadius: 0.65,
+        dir: new THREE.Vector3(0.05, -0.62, -0.78).normalize(),
+        angularRadius: 0.42,
+        bilateral: false,
+        order: 14,
       },
       brainstem: {
         name: 'Brainstem',
         latin: 'Truncus encephali',
-        desc: 'Midbrain, pons, medulla. Vital autonomic functions: breathing, heart rate, sleep-wake cycle, cranial nerve relay.',
+        desc: 'Comprises midbrain, pons, and medulla oblongata. Controls vital autonomic functions — breathing, heart rate, blood pressure, sleep-wake cycle. All ascending/descending tracts and 10 of 12 cranial nerves pass through.',
         color: new THREE.Color(0x8aff4a),
-        // Bottom center, descending
-        dir: new THREE.Vector3(0.0, -1.0, -0.15).normalize(),
-        angularRadius: 0.5,
-      }
+        dir: new THREE.Vector3(0, -0.95, -0.2).normalize(),
+        angularRadius: 0.3,
+        bilateral: false,
+        order: 15,
+      },
+      // ---------------- SENSORY ----------------
+      olfactoryBulb: {
+        name: 'Olfactory Bulb',
+        latin: 'Bulbus olfactorius',
+        desc: 'Small, paired, bulbous structure on the orbital surface of the frontal lobe. First relay for olfactory receptor neurons — the only sensory pathway that bypasses the thalamus. Projects directly to the olfactory cortex.',
+        color: new THREE.Color(0xffd93d),
+        dir: new THREE.Vector3(0.16, -0.28, 0.94).normalize(),
+        angularRadius: 0.14,
+        bilateral: true,
+        order: 16,
+      },
     };
 
     const REGION_KEYS = Object.keys(REGIONS);
@@ -381,12 +515,12 @@
     // ============================================================
     //  SHARED UNIFORMS FOR THE HIGHLIGHT SHADER
     // ============================================================
-    const uActiveIndex = { value: -1 };
-    const uRegionColor = { value: new THREE.Color(0xffffff) };
-    const uPulse = { value: 0 };
-    // Six region directions (normalized) and angular radii, padded
-    const uRegionDirs = { value: REGION_KEYS.map(k => REGIONS[k].dir.clone()) };
-    const uRegionRadii = { value: REGION_KEYS.map(k => REGIONS[k].angularRadius) };
+    const uActiveFlag      = { value: 0 };
+    const uActiveDir       = { value: new THREE.Vector3(0, 0, 1) };
+    const uActiveRadius    = { value: 0.5 };
+    const uActiveBilateral = { value: 0 };
+    const uRegionColor     = { value: new THREE.Color(0xffffff) };
+    const uPulse           = { value: 0 };
 
     // ============================================================
     //  BRAIN MODEL LOADING
@@ -401,7 +535,6 @@
       (gltf) => {
         const model = gltf.scene;
 
-        // Normalize: center at origin, scale to fit ~2.4 units
         const box = new THREE.Box3().setFromObject(model);
         const size = box.getSize(new THREE.Vector3());
         const center = box.getCenter(new THREE.Vector3());
@@ -410,18 +543,12 @@
 
         model.scale.setScalar(scale);
         model.position.sub(center.multiplyScalar(scale));
-
-        // Orient the model so that +Z = front, +Y = up.
-        // The Brain.glb from that repo is typically oriented with
-        // -Z as front. We flip it here so anatomical mapping works.
-        // We rotate 180° around Y to face the camera naturally.
         model.rotation.y = Math.PI;
 
         model.traverse((child) => {
           if (child.isMesh) {
             child.castShadow = true;
             child.receiveShadow = true;
-
             const mats = Array.isArray(child.material) ? child.material : [child.material];
             mats.forEach(mat => {
               if (mat) {
@@ -430,14 +557,12 @@
                 mat.envMapIntensity = 0.6;
               }
             });
-
             if (!brainMesh) brainMesh = child;
           }
         });
 
         brainGroup.add(model);
 
-        // Wait one frame so matrixWorld is updated
         requestAnimationFrame(() => {
           applyHighlightShader();
           setTimeout(() => loader.classList.add('hidden'), 250);
@@ -473,18 +598,10 @@
 
     // ============================================================
     //  HIGHLIGHT SHADER PATCH
-    //  The fragment shader receives a per-fragment direction in
-    //  LOCAL brain space. For each of the 6 regions, we compute
-    //  the angular distance from the fragment's direction to that
-    //  region's anatomical direction. If within the region's radius,
-    //  we tint the fragment with the region color.
-    //  The highlight is computed purely from direction, so it wraps
-    //  around the entire lobe area smoothly — no floating overlay.
     // ============================================================
     function applyHighlightShader() {
       if (!brainMesh) return;
 
-      // Make sure world matrices are current
       brainGroup.updateMatrixWorld(true);
       brainMesh.updateMatrixWorld(true);
 
@@ -495,14 +612,13 @@
         if (!m) return;
 
         m.onBeforeCompile = (shader) => {
-          // Share the uniforms
-          shader.uniforms.uActiveIndex = uActiveIndex;
-          shader.uniforms.uRegionColor = uRegionColor;
-          shader.uniforms.uPulse = uPulse;
-          shader.uniforms.uRegionDirs = uRegionDirs;
-          shader.uniforms.uRegionRadii = uRegionRadii;
+          shader.uniforms.uActiveFlag      = uActiveFlag;
+          shader.uniforms.uActiveDir       = uActiveDir;
+          shader.uniforms.uActiveRadius    = uActiveRadius;
+          shader.uniforms.uActiveBilateral = uActiveBilateral;
+          shader.uniforms.uRegionColor     = uRegionColor;
+          shader.uniforms.uPulse           = uPulse;
 
-          // Pass local position to the fragment shader
           shader.vertexShader = shader.vertexShader.replace(
             '#include <common>',
             `
@@ -519,51 +635,39 @@
             `
           );
 
-          // Fragment shader: tint the surface based on direction
           shader.fragmentShader = shader.fragmentShader.replace(
             '#include <common>',
             `
             #include <common>
             varying vec3 vLocalPos;
-            uniform float uActiveIndex;
+            uniform float uActiveFlag;
+            uniform vec3 uActiveDir;
+            uniform float uActiveRadius;
+            uniform float uActiveBilateral;
             uniform vec3 uRegionColor;
             uniform float uPulse;
-            uniform vec3 uRegionDirs[6];
-            uniform float uRegionRadii[6];
             `
           );
 
-          // We inject the highlight right before the final output
-          // is assembled. Using dithering_fragment as a hook is
-          // safe because it runs after all lighting is applied.
           shader.fragmentShader = shader.fragmentShader.replace(
             '#include <dithering_fragment>',
             `
-            // Compute the surface direction in LOCAL brain space.
-            // Normalize so all directions are unit vectors.
-            if (uActiveIndex >= 0.0) {
+            if (uActiveFlag > 0.5) {
               vec3 dir = normalize(vLocalPos);
+              float angle = acos(clamp(dot(dir, uActiveDir), -1.0, 1.0));
 
-              // Get the active region's anatomical direction
-              int idx = int(uActiveIndex + 0.5);
-              vec3 regionDir = uRegionDirs[idx];
-              float regionRadius = uRegionRadii[idx];
+              if (uActiveBilateral > 0.5) {
+                vec3 mirrorDir = vec3(-uActiveDir.x, uActiveDir.y, uActiveDir.z);
+                float angle2 = acos(clamp(dot(dir, mirrorDir), -1.0, 1.0));
+                angle = min(angle, angle2);
+              }
 
-              // Angular distance
-              float cosAngle = clamp(dot(dir, regionDir), -1.0, 1.0);
-              float angle = acos(cosAngle);
-
-              // Soft edge falloff: 1 inside, 0 outside
-              float mask = 1.0 - smoothstep(regionRadius * 0.85, regionRadius * 1.05, angle);
+              float mask = 1.0 - smoothstep(uActiveRadius * 0.88, uActiveRadius * 1.06, angle);
 
               if (mask > 0.001) {
-                // Pulse the glow
-                float pulse = 0.7 + 0.3 * sin(uPulse * 3.0);
-
-                // Mix the surface color with the region color,
-                // and add an emissive boost so the region "glows"
-                gl_FragColor.rgb = mix(gl_FragColor.rgb, uRegionColor, 0.65 * mask * pulse);
-                gl_FragColor.rgb += uRegionColor * 0.4 * mask * pulse;
+                float pulse = 0.72 + 0.28 * sin(uPulse * 3.0);
+                gl_FragColor.rgb = mix(gl_FragColor.rgb, uRegionColor, 0.68 * mask * pulse);
+                gl_FragColor.rgb += uRegionColor * 0.42 * mask * pulse;
               }
             }
 
@@ -579,7 +683,7 @@
     }
 
     // ============================================================
-    //  RAYCASTER — click detection on the brain surface
+    //  RAYCASTER
     // ============================================================
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
@@ -615,30 +719,40 @@
     });
 
     /**
-     * Given a world-space point on the brain, determine which
-     * region it falls into. We convert the point to LOCAL brain
-     * space and then use direction + angular radius to classify.
+     * Find region at a world-space point. Uses a priority system
+     * based on order (smaller/deeper structures win) so that
+     * structures like the amygdala and hippocampus remain
+     * clickable even where they lie under a larger cortical lobe.
      */
     function findRegionAt(worldPoint) {
       if (!brainMesh) return null;
 
-      // Convert world point → local brain space
       const localPoint = worldPoint.clone();
       brainMesh.worldToLocal(localPoint);
-
-      // Normalize to get a unit direction
       const dir = localPoint.clone().normalize();
 
       let bestKey = null;
-      let bestAngle = Infinity;
+      let bestScore = Infinity;
 
       REGION_KEYS.forEach(key => {
         const region = REGIONS[key];
-        const cosAngle = THREE.MathUtils.clamp(dir.dot(region.dir), -1, 1);
-        const angle = Math.acos(cosAngle);
-        if (angle < region.angularRadius * 1.15 && angle < bestAngle) {
-          bestAngle = angle;
-          bestKey = key;
+
+        let angle = Math.acos(THREE.MathUtils.clamp(dir.dot(region.dir), -1, 1));
+
+        if (region.bilateral) {
+          const mirror = new THREE.Vector3(-region.dir.x, region.dir.y, region.dir.z);
+          const a2 = Math.acos(THREE.MathUtils.clamp(dir.dot(mirror), -1, 1));
+          angle = Math.min(angle, a2);
+        }
+
+        if (angle < region.angularRadius * 1.08) {
+          // Score = normalized angle, with an order-based tie-breaker
+          // so smaller / more specific structures win over large lobes.
+          const score = angle / region.angularRadius + (region.order || 0) * 0.001;
+          if (score < bestScore) {
+            bestScore = score;
+            bestKey = key;
+          }
         }
       });
 
@@ -658,14 +772,17 @@
       infoOverlay.classList.add('visible');
       controls.autoRotate = false;
 
-      uActiveIndex.value = REGION_INDEX[key];
+      uActiveFlag.value = 1;
+      uActiveDir.value.copy(region.dir);
+      uActiveRadius.value = region.angularRadius;
+      uActiveBilateral.value = region.bilateral ? 1 : 0;
       uRegionColor.value.copy(region.color);
     }
 
     function hideRegionInfo() {
       infoOverlay.classList.remove('visible');
       controls.autoRotate = true;
-      uActiveIndex.value = -1;
+      uActiveFlag.value = 0;
     }
     closeBtn.addEventListener('click', hideRegionInfo);
 
